@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Парсер открытых сводок https://radar-map.ru/ в RadarFeedPayload для SkyRadar."""
+"""Парсер открытых сводок radar-map.ru и публичных страниц Telegram в RadarFeedPayload."""
 
 from __future__ import annotations
 
@@ -9,17 +9,26 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
+from bs4 import BeautifulSoup
 
 PAGE_URL = "https://radar-map.ru/"
 STATE_PATH = "/api/state"
-OUTPUT_PATH = Path(__file__).resolve().parent / "output" / "feed.json"
+ROOT = Path(__file__).resolve().parent
+OUTPUT_PATH = ROOT / "output" / "feed.json"
+TELEGRAM_SOURCES_PATH = ROOT / "config" / "telegram_sources.json"
 USER_AGENT = "SkyRadarFeedParser/1.0"
+TELEGRAM_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
 MSK = timezone(timedelta(hours=3))
 ACTIVE_TTL = timedelta(minutes=50)
 CLEAR_TTL = timedelta(minutes=20)
+DEDUP_WINDOW = timedelta(minutes=15)
 LEVEL_RANK = {"danger": 4, "attention": 3, "allClear": 2, "clear": 1}
 DANGER_RE = re.compile(r"опасност|тревог|ракет|взрыв|каб|авиаудар|\bпво\b", re.IGNORECASE)
-ATTENTION_RE = re.compile(r"вниман|фиксац|прол[её]т|бпла|дрон|\bfpv\b", re.IGNORECASE)
+ATTENTION_RE = re.compile(r"вниман|фиксац|прол[её]т|бпла|беспилот|дрон|\bfpv\b", re.IGNORECASE)
+UAV_RE = re.compile(r"бпла|беспилот|дрон|\bfpv\b|баражир", re.IGNORECASE)
 ALL_CLEAR_RE = re.compile(r"отбой|опасность снята|тревога снята|угроза миновала|\bчисто\b", re.IGNORECASE)
 STAMP_RE = re.compile(r"\d{2}\.\d{2}\.\d{4}\s+\d{2}:\d{2}")
 PROMO_RE = re.compile(r"карта опасностей.*$|radar-vrv\.ru|локатор россии.*$", re.IGNORECASE)
@@ -83,6 +92,13 @@ def is_russian_subject(name: str) -> bool:
     if lowered in FEDERAL_CITIES:
         return True
     return any(hint in lowered for hint in SUBJECT_HINT)
+
+
+def region_by_id(region_id: str) -> tuple[str, str] | None:
+    for known_id, title, _aliases in KNOWN_REGIONS:
+        if known_id == region_id:
+            return known_id, title
+    return None
 
 
 def known_for(name: str) -> tuple[str, str] | None:
@@ -274,17 +290,163 @@ def build_alerts(state: dict, now: datetime) -> list[dict]:
             ):
                 chosen[region_id] = alert
 
-    alerts = list(chosen.values())
-    alerts.sort(key=lambda item: (-LEVEL_RANK[item["level"]], -item["_moment"].timestamp(), item["regionName"]))
-    for alert in alerts:
-        del alert["_moment"]
+    return list(chosen.values())
+
+
+def load_telegram_sources() -> list[dict]:
+    if not TELEGRAM_SOURCES_PATH.exists():
+        return []
+    raw = json.loads(TELEGRAM_SOURCES_PATH.read_text(encoding="utf-8"))
+    rows = raw.get("sources") if isinstance(raw, dict) else raw
+    if not isinstance(rows, list):
+        raise RuntimeError("config/telegram_sources.json должен быть списком каналов.")
+    sources: list[dict] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        username = str(row.get("username") or "").strip().lstrip("@")
+        if not username:
+            continue
+        default_region = row.get("default_region_id")
+        sources.append(
+            {
+                "username": username,
+                "title": str(row.get("title") or username).strip() or username,
+                "default_region_id": default_region if isinstance(default_region, str) and default_region else None,
+            }
+        )
+    return sources
+
+
+def fetch_channel_html(username: str) -> str:
+    response = requests.get(
+        f"https://t.me/s/{username}",
+        headers={
+            "User-Agent": TELEGRAM_USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "ru,en;q=0.8",
+        },
+        timeout=25,
+    )
+    response.raise_for_status()
+    return response.text
+
+
+def parse_telegram_time(raw: str) -> datetime | None:
+    try:
+        moment = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    return moment.astimezone(timezone.utc)
+
+
+def channel_targets(text: str, default_region_id: str | None) -> list[tuple[str, str]]:
+    mentioned = mentioned_regions(text)
+    if mentioned:
+        return mentioned
+    if not default_region_id:
+        return []
+    fallback = region_by_id(default_region_id)
+    return [fallback] if fallback else []
+
+
+def alerts_from_channel(source: dict, now: datetime) -> list[dict]:
+    username = source["username"]
+    soup = BeautifulSoup(fetch_channel_html(username), "html.parser")
+    alerts: list[dict] = []
+    for node in soup.select(".tgme_widget_message"):
+        post = str(node.get("data-post") or "")
+        text_node = node.select_one(".tgme_widget_message_text")
+        time_node = node.select_one("time")
+        if text_node is None or time_node is None or "/" not in post:
+            continue
+        text = re.sub(r"\s+", " ", text_node.get_text(" ", strip=True)).strip()
+        if not text or UAV_RE.search(text) is None:
+            continue
+        moment = parse_telegram_time(str(time_node.get("datetime") or ""))
+        if moment is None or moment < now - ACTIVE_TTL:
+            continue
+        level = level_from_text(text) or "attention"
+        if level == "clear":
+            continue
+        targets = channel_targets(text, source["default_region_id"])
+        if not targets:
+            continue
+        channel_name, post_id = post.split("/", 1)
+        summary = text[:360]
+        ttl = CLEAR_TTL if level == "allClear" else ACTIVE_TTL
+        expires = moment + ttl
+        if expires <= now:
+            continue
+        for region_id, region_name in targets:
+            alerts.append(
+                {
+                    "id": f"{region_id}-{level}-{int(moment.timestamp())}",
+                    "regionId": region_id,
+                    "regionName": region_name,
+                    "level": level,
+                    "summary": summary,
+                    "sourceName": source["title"],
+                    "sourceURL": f"https://t.me/{channel_name}/{post_id}",
+                    "timestamp": iso_z(moment),
+                    "expiresAt": iso_z(expires),
+                    "_moment": moment,
+                }
+            )
     return alerts
+
+
+def fetch_telegram_alerts(now: datetime) -> list[dict]:
+    alerts: list[dict] = []
+    for source in load_telegram_sources():
+        try:
+            found = alerts_from_channel(source, now)
+        except (requests.RequestException, ValueError) as exc:
+            print(f"Telegram @{source['username']}: {exc}")
+            continue
+        print(f"Telegram @{source['username']}: {len(found)}")
+        alerts.extend(found)
+    return alerts
+
+
+def dedupe_region_window(alerts: list[dict]) -> list[dict]:
+    grouped: dict[str, list[dict]] = {}
+    for alert in alerts:
+        grouped.setdefault(alert["regionId"], []).append(alert)
+    kept: list[dict] = []
+    for region_alerts in grouped.values():
+        region_alerts.sort(key=lambda item: item["_moment"])
+        cluster: list[dict] = []
+        for alert in region_alerts:
+            if cluster and alert["_moment"] - cluster[-1]["_moment"] <= DEDUP_WINDOW:
+                previous = cluster[-1]
+                if LEVEL_RANK[alert["level"]] > LEVEL_RANK[previous["level"]] or (
+                    alert["level"] == previous["level"] and alert["_moment"] >= previous["_moment"]
+                ):
+                    cluster[-1] = alert
+                continue
+            cluster.append(alert)
+        kept.extend(cluster)
+    return kept
+
+
+def finalize_alerts(alerts: list[dict], now: datetime) -> list[dict]:
+    fresh = [alert for alert in alerts if alert["_moment"] + (CLEAR_TTL if alert["level"] == "allClear" else ACTIVE_TTL) > now]
+    merged = dedupe_region_window(fresh)
+    merged.sort(key=lambda item: (-LEVEL_RANK[item["level"]], -item["_moment"].timestamp(), item["regionName"]))
+    for alert in merged:
+        del alert["_moment"]
+    return merged
 
 
 def build_payload(now: datetime | None = None) -> dict:
     moment = now or datetime.now(timezone.utc)
     state = fetch_state()
-    return {"updatedAt": iso_z(moment), "alerts": build_alerts(state, moment)}
+    alerts = build_alerts(state, moment)
+    alerts.extend(fetch_telegram_alerts(moment))
+    return {"updatedAt": iso_z(moment), "alerts": finalize_alerts(alerts, moment)}
 
 
 def main() -> None:
@@ -294,7 +456,7 @@ def main() -> None:
     print(f"Записан {OUTPUT_PATH}")
     print(f"Сводок: {len(payload['alerts'])}")
     for alert in payload["alerts"]:
-        print(f"- {alert['level']}: {alert['regionName']} до {alert['expiresAt']}")
+        print(f"- {alert['level']}: {alert['regionName']} [{alert['sourceName']}] до {alert['expiresAt']}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,32 @@
+[
+  {
+    "username": "aleksandr_shuvaev",
+    "title": "Александр Шуваев",
+    "default_region_id": "belgorod-oblast"
+  },
+  {
+    "username": "hinshtein",
+    "title": "Александр Хинштейн",
+    "default_region_id": "kursk-oblast"
+  },
+  {
+    "username": "gusev_36",
+    "title": "Александр Гусев",
+    "default_region_id": "voronezh-oblast"
+  },
+  {
+    "username": "Yuri_Slusar",
+    "title": "Юрий Слюсарь",
+    "default_region_id": "rostov-oblast"
+  },
+  {
+    "username": "e_v_kovalchuk",
+    "title": "Егор Ковальчук",
+    "default_region_id": "bryansk-oblast"
+  },
+  {
+    "username": "kondratyevvi",
+    "title": "Вениамин Кондратьев",
+    "default_region_id": "krasnodar-krai"
+  }
+]
