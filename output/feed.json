@@ -1,49 +1,82 @@
 {
-  "updatedAt": "2026-11-19T19:16:50Z",
+  "updatedAt": "2026-11-19T19:34:46Z",
   "alerts": [
     {
-      "id": "zaporizhzhia-oblast-danger-1795115712",
-      "regionId": "zaporizhzhia-oblast",
-      "regionName": "Запорожская область",
-      "level": "danger",
-      "summary": "Запорожская область РФ Тревога по БПЛА сохраняется",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:15:12Z",
-      "expiresAt": "2026-11-19T20:05:12Z"
-    },
-    {
-      "id": "crimea-danger-1795115496",
+      "id": "crimea-danger-1795116815",
       "regionId": "crimea",
       "regionName": "Республика Крым",
       "level": "danger",
-      "summary": "Стерегущее Раздольное Портовое и близлежащие Тревога по БПЛА Раздольненский район Республика Крым",
+      "summary": "Армянск Красноперекопск Ишунь И близлежащие Тревога по БПЛА Республика Крым",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:11:36Z",
-      "expiresAt": "2026-11-19T20:01:36Z"
+      "timestamp": "2026-11-19T19:33:35Z",
+      "expiresAt": "2026-11-19T20:23:35Z"
     },
     {
-      "id": "dnr-danger-1795115453",
+      "id": "bryansk-oblast-danger-1795116495",
+      "regionId": "bryansk-oblast",
+      "regionName": "Брянская область",
+      "level": "danger",
+      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:28:15Z",
+      "expiresAt": "2026-11-19T20:18:15Z"
+    },
+    {
+      "id": "kaluga-oblast-danger-1795116495",
+      "regionId": "kaluga-oblast",
+      "regionName": "Калужская область",
+      "level": "danger",
+      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:28:15Z",
+      "expiresAt": "2026-11-19T20:18:15Z"
+    },
+    {
+      "id": "moscow-oblast-danger-1795116495",
+      "regionId": "moscow-oblast",
+      "regionName": "Московская область",
+      "level": "danger",
+      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:28:15Z",
+      "expiresAt": "2026-11-19T20:18:15Z"
+    },
+    {
+      "id": "dnr-danger-1795116388",
       "regionId": "dnr",
       "regionName": "Донецкая Народная Республика",
       "level": "danger",
-      "summary": "Енакиево, Углегорск, Дебальцево и близлежащие Тревога по БПЛА, ещё фиксации ДНР",
+      "summary": "Енакиево, Ждановка, Кировское и близлежащие Опасность по БПЛА повторно, ещё фиксации ДНР",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:10:53Z",
-      "expiresAt": "2026-11-19T20:00:53Z"
+      "timestamp": "2026-11-19T19:26:28Z",
+      "expiresAt": "2026-11-19T20:16:28Z"
     },
     {
-      "id": "oryol-oblast-danger-1795115286",
-      "regionId": "oryol-oblast",
-      "regionName": "Орловская область",
+      "id": "kherson-oblast-danger-1795116049",
+      "regionId": "kherson-oblast",
+      "regionName": "Херсонская область",
       "level": "danger",
-      "summary": "Орёл Орловская область Работа ПВО по БПЛА",
+      "summary": "Скадовск и близлежащие Тревога по БПЛА Шарк Херсонская область РФ",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:08:06Z",
-      "expiresAt": "2026-11-19T19:58:06Z"
+      "timestamp": "2026-11-19T19:20:49Z",
+      "expiresAt": "2026-11-19T20:10:49Z"
+    },
+    {
+      "id": "kursk-oblast-danger-1795115981",
+      "regionId": "kursk-oblast",
+      "regionName": "Курская область",
+      "level": "danger",
+      "summary": "Брянская область Курская область Орловская область Тревога по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:19:41Z",
+      "expiresAt": "2026-11-19T20:09:41Z"
     },
     {
       "id": "lipetsk-oblast-danger-1795115202",
@@ -57,28 +90,6 @@
       "expiresAt": "2026-11-19T19:56:42Z"
     },
     {
-      "id": "moscow-oblast-danger-1795115196",
-      "regionId": "moscow-oblast",
-      "regionName": "Московская область",
-      "level": "danger",
-      "summary": "МО Истра ГО Клин Московская область Опасность по БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:06:36Z",
-      "expiresAt": "2026-11-19T19:56:36Z"
-    },
-    {
-      "id": "kursk-oblast-danger-1795115147",
-      "regionId": "kursk-oblast",
-      "regionName": "Курская область",
-      "level": "danger",
-      "summary": "Тазово Золотухино Золотухинский район Курская область Тревога по БПЛА повторно",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:05:47Z",
-      "expiresAt": "2026-11-19T19:55:47Z"
-    },
-    {
       "id": "voronezh-oblast-danger-1795114779",
       "regionId": "voronezh-oblast",
       "regionName": "Воронежская область",
@@ -90,37 +101,26 @@
       "expiresAt": "2026-11-19T19:49:39Z"
     },
     {
-      "id": "lnr-danger-1795113728",
-      "regionId": "lnr",
-      "regionName": "Луганская Народная Республика",
-      "level": "danger",
-      "summary": "Фащевка Петровское Красный Кут Опасность по БПЛА ЛНР",
+      "id": "zaporizhzhia-oblast-attention-1795116437",
+      "regionId": "zaporizhzhia-oblast",
+      "regionName": "Запорожская область",
+      "level": "attention",
+      "summary": "Бердянск, от Луначарского кольца по над Мелитопольским шоссе, в сторону Новопетровки, ближе к морю фиксация БПЛА Запорожская область РФ",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T18:42:08Z",
-      "expiresAt": "2026-11-19T19:32:08Z"
+      "timestamp": "2026-11-19T19:27:17Z",
+      "expiresAt": "2026-11-19T20:17:17Z"
     },
     {
-      "id": "bryansk-oblast-attention-1795115471",
-      "regionId": "bryansk-oblast",
-      "regionName": "Брянская область",
+      "id": "oryol-oblast-attention-1795116402",
+      "regionId": "oryol-oblast",
+      "regionName": "Орловская область",
       "level": "attention",
-      "summary": "Почеп и близлежащие, Брянская область - ещё пролёты БПЛА на север, северо-восток. 📡",
+      "summary": "Шаблыкинский район Дмитровск Троснянский район Орловская область Фиксации БПЛА",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:11:11Z",
-      "expiresAt": "2026-11-19T20:01:11Z"
-    },
-    {
-      "id": "kaluga-oblast-attention-1795115267",
-      "regionId": "kaluga-oblast",
-      "regionName": "Калужская область",
-      "level": "attention",
-      "summary": "Мосальский район Калужская область Фиксация БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:07:47Z",
-      "expiresAt": "2026-11-19T19:57:47Z"
+      "timestamp": "2026-11-19T19:26:42Z",
+      "expiresAt": "2026-11-19T20:16:42Z"
     },
     {
       "id": "smolensk-oblast-attention-1795114911",
