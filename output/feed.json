@@ -1,6 +1,18 @@
 {
-  "updatedAt": "2026-11-19T20:14:44Z",
+  "updatedAt": "2026-11-19T20:17:16Z",
   "alerts": [
+    {
+      "id": "rostov-oblast-danger-1795119317",
+      "regionId": "rostov-oblast",
+      "regionName": "Ростовская область",
+      "level": "danger",
+      "summary": "Азов и близлежащие Тревога по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:15:17Z",
+      "expiresAt": "2026-11-19T21:05:17Z",
+      "locality": "Азов"
+    },
     {
       "id": "kursk-oblast-danger-1795119234",
       "regionId": "kursk-oblast",
@@ -46,18 +58,6 @@
       "sourceURL": "https://radar-map.ru/",
       "timestamp": "2026-11-19T20:03:16Z",
       "expiresAt": "2026-11-19T20:53:16Z"
-    },
-    {
-      "id": "rostov-oblast-danger-1795118437",
-      "regionId": "rostov-oblast",
-      "regionName": "Ростовская область",
-      "level": "danger",
-      "summary": "Таганрог и близлежащие Тревога по БПЛА Ростовская область",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:00:37Z",
-      "expiresAt": "2026-11-19T20:50:37Z",
-      "locality": "Таганрог"
     },
     {
       "id": "kherson-oblast-danger-1795117529",
