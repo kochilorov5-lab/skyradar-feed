@@ -1,6 +1,18 @@
 {
-  "updatedAt": "2026-11-19T20:17:16Z",
+  "updatedAt": "2026-11-19T20:18:41Z",
   "alerts": [
+    {
+      "id": "zaporizhzhia-oblast-danger-1795119415",
+      "regionId": "zaporizhzhia-oblast",
+      "regionName": "Запорожская область",
+      "level": "danger",
+      "summary": "Приморск Бердянск И ближайшее Тревога по БПЛА сохраняется Ещё фиксации",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:16:55Z",
+      "expiresAt": "2026-11-19T21:06:55Z",
+      "locality": "Бердянск"
+    },
     {
       "id": "rostov-oblast-danger-1795119317",
       "regionId": "rostov-oblast",
@@ -71,18 +83,6 @@
       "expiresAt": "2026-11-19T20:35:29Z"
     },
     {
-      "id": "zaporizhzhia-oblast-danger-1795117289",
-      "regionId": "zaporizhzhia-oblast",
-      "regionName": "Запорожская область",
-      "level": "danger",
-      "summary": "Бердянск и близлежащие Тревога по БПЛА сохраняется",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:41:29Z",
-      "expiresAt": "2026-11-19T20:31:29Z",
-      "locality": "Бердянск"
-    },
-    {
       "id": "oryol-oblast-danger-1795117181",
       "regionId": "oryol-oblast",
       "regionName": "Орловская область",
@@ -94,37 +94,26 @@
       "expiresAt": "2026-11-19T20:29:41Z"
     },
     {
-      "id": "bryansk-oblast-danger-1795116495",
+      "id": "bryansk-oblast-attention-1795118907",
       "regionId": "bryansk-oblast",
       "regionName": "Брянская область",
-      "level": "danger",
-      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
+      "level": "attention",
+      "summary": "Жуковка и близлежащие, Брянская область - пролёты БПЛА в сторону Гришина Слобода, Старь, Бытошь, далее на Людиново, Бетлица, Киров, Калужской области",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:28:15Z",
-      "expiresAt": "2026-11-19T20:18:15Z"
+      "timestamp": "2026-11-19T20:08:27Z",
+      "expiresAt": "2026-11-19T20:58:27Z"
     },
     {
-      "id": "kaluga-oblast-danger-1795116495",
+      "id": "kaluga-oblast-attention-1795117797",
       "regionId": "kaluga-oblast",
       "regionName": "Калужская область",
-      "level": "danger",
-      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
+      "level": "attention",
+      "summary": "Бояновичи, ​Хвастовичский район, Калужская область - пролёты БПЛА со стороны Брянска в сторону Киевской трассы",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:28:15Z",
-      "expiresAt": "2026-11-19T20:18:15Z"
-    },
-    {
-      "id": "moscow-oblast-danger-1795116495",
-      "regionId": "moscow-oblast",
-      "regionName": "Московская область",
-      "level": "danger",
-      "summary": "Брянская область, Калужская область - опасность по БПЛА сохраняется. Московская область - опасность по БПЛА от Калужской области. 📡",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:28:15Z",
-      "expiresAt": "2026-11-19T20:18:15Z"
+      "timestamp": "2026-11-19T19:49:57Z",
+      "expiresAt": "2026-11-19T20:39:57Z"
     }
   ]
 }
