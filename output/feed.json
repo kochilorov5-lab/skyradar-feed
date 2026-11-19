@@ -1,6 +1,17 @@
 {
-  "updatedAt": "2026-11-19T19:56:07Z",
+  "updatedAt": "2026-11-19T19:56:50Z",
   "alerts": [
+    {
+      "id": "rostov-oblast-danger-1795118166",
+      "regionId": "rostov-oblast",
+      "regionName": "Ростовская область",
+      "level": "danger",
+      "summary": "Ростовская область - опасность по БПЛА по югу. 📡",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:56:06Z",
+      "expiresAt": "2026-11-19T20:46:06Z"
+    },
     {
       "id": "kherson-oblast-danger-1795117529",
       "regionId": "kherson-oblast",
@@ -110,17 +121,6 @@
       "sourceURL": "https://radar-map.ru/",
       "timestamp": "2026-11-19T19:28:15Z",
       "expiresAt": "2026-11-19T20:18:15Z"
-    },
-    {
-      "id": "lipetsk-oblast-danger-1795115202",
-      "regionId": "lipetsk-oblast",
-      "regionName": "Липецкая область",
-      "level": "danger",
-      "summary": "Липецкая область Опасность по БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:06:42Z",
-      "expiresAt": "2026-11-19T19:56:42Z"
     }
   ]
 }
