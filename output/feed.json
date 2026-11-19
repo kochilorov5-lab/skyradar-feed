@@ -1,0 +1,137 @@
+{
+  "updatedAt": "2026-11-19T19:16:50Z",
+  "alerts": [
+    {
+      "id": "zaporizhzhia-oblast-danger-1795115712",
+      "regionId": "zaporizhzhia-oblast",
+      "regionName": "Запорожская область",
+      "level": "danger",
+      "summary": "Запорожская область РФ Тревога по БПЛА сохраняется",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:15:12Z",
+      "expiresAt": "2026-11-19T20:05:12Z"
+    },
+    {
+      "id": "crimea-danger-1795115496",
+      "regionId": "crimea",
+      "regionName": "Республика Крым",
+      "level": "danger",
+      "summary": "Стерегущее Раздольное Портовое и близлежащие Тревога по БПЛА Раздольненский район Республика Крым",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:11:36Z",
+      "expiresAt": "2026-11-19T20:01:36Z"
+    },
+    {
+      "id": "dnr-danger-1795115453",
+      "regionId": "dnr",
+      "regionName": "Донецкая Народная Республика",
+      "level": "danger",
+      "summary": "Енакиево, Углегорск, Дебальцево и близлежащие Тревога по БПЛА, ещё фиксации ДНР",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:10:53Z",
+      "expiresAt": "2026-11-19T20:00:53Z"
+    },
+    {
+      "id": "oryol-oblast-danger-1795115286",
+      "regionId": "oryol-oblast",
+      "regionName": "Орловская область",
+      "level": "danger",
+      "summary": "Орёл Орловская область Работа ПВО по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:08:06Z",
+      "expiresAt": "2026-11-19T19:58:06Z"
+    },
+    {
+      "id": "lipetsk-oblast-danger-1795115202",
+      "regionId": "lipetsk-oblast",
+      "regionName": "Липецкая область",
+      "level": "danger",
+      "summary": "Липецкая область Опасность по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:06:42Z",
+      "expiresAt": "2026-11-19T19:56:42Z"
+    },
+    {
+      "id": "moscow-oblast-danger-1795115196",
+      "regionId": "moscow-oblast",
+      "regionName": "Московская область",
+      "level": "danger",
+      "summary": "МО Истра ГО Клин Московская область Опасность по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:06:36Z",
+      "expiresAt": "2026-11-19T19:56:36Z"
+    },
+    {
+      "id": "kursk-oblast-danger-1795115147",
+      "regionId": "kursk-oblast",
+      "regionName": "Курская область",
+      "level": "danger",
+      "summary": "Тазово Золотухино Золотухинский район Курская область Тревога по БПЛА повторно",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:05:47Z",
+      "expiresAt": "2026-11-19T19:55:47Z"
+    },
+    {
+      "id": "voronezh-oblast-danger-1795114779",
+      "regionId": "voronezh-oblast",
+      "regionName": "Воронежская область",
+      "level": "danger",
+      "summary": "Воронежская область Опасность по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T18:59:39Z",
+      "expiresAt": "2026-11-19T19:49:39Z"
+    },
+    {
+      "id": "lnr-danger-1795113728",
+      "regionId": "lnr",
+      "regionName": "Луганская Народная Республика",
+      "level": "danger",
+      "summary": "Фащевка Петровское Красный Кут Опасность по БПЛА ЛНР",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T18:42:08Z",
+      "expiresAt": "2026-11-19T19:32:08Z"
+    },
+    {
+      "id": "bryansk-oblast-attention-1795115471",
+      "regionId": "bryansk-oblast",
+      "regionName": "Брянская область",
+      "level": "attention",
+      "summary": "Почеп и близлежащие, Брянская область - ещё пролёты БПЛА на север, северо-восток. 📡",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:11:11Z",
+      "expiresAt": "2026-11-19T20:01:11Z"
+    },
+    {
+      "id": "kaluga-oblast-attention-1795115267",
+      "regionId": "kaluga-oblast",
+      "regionName": "Калужская область",
+      "level": "attention",
+      "summary": "Мосальский район Калужская область Фиксация БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:07:47Z",
+      "expiresAt": "2026-11-19T19:57:47Z"
+    },
+    {
+      "id": "smolensk-oblast-attention-1795114911",
+      "regionId": "smolensk-oblast",
+      "regionName": "Смоленская область",
+      "level": "attention",
+      "summary": "Гагарин Смоленская область Фиксация БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T19:01:51Z",
+      "expiresAt": "2026-11-19T19:51:51Z"
+    }
+  ]
+}

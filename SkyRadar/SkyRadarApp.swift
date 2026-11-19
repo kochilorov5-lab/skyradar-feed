@@ -11,7 +11,7 @@ import SwiftUI
 struct SkyRadarApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainRadarView()
         }
     }
 }
