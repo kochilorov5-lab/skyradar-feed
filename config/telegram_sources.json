@@ -1,7 +1,7 @@
 [
   {
-    "username": "aleksandr_shuvaev",
-    "title": "Александр Шуваев",
+    "username": "vvgladkov",
+    "title": "Вячеслав Гладков",
     "default_region_id": "belgorod-oblast"
   },
   {
@@ -20,13 +20,63 @@
     "default_region_id": "rostov-oblast"
   },
   {
-    "username": "e_v_kovalchuk",
-    "title": "Егор Ковальчук",
+    "username": "avbogomaz",
+    "title": "Александр Богомаз",
     "default_region_id": "bryansk-oblast"
   },
   {
     "username": "kondratyevvi",
     "title": "Вениамин Кондратьев",
     "default_region_id": "krasnodar-krai"
+  },
+  {
+    "username": "klychkov_andrey",
+    "title": "Андрей Клычков",
+    "default_region_id": "oryol-oblast"
+  },
+  {
+    "username": "shapsha_vv",
+    "title": "Владислав Шапша",
+    "default_region_id": "kaluga-oblast"
+  },
+  {
+    "username": "anohin67",
+    "title": "Василий Анохин",
+    "default_region_id": "smolensk-oblast"
+  },
+  {
+    "username": "dmilyaev",
+    "title": "Дмитрий Миляев",
+    "default_region_id": "tula-oblast"
+  },
+  {
+    "username": "tularegion71",
+    "title": "Правительство Тульской области",
+    "default_region_id": "tula-oblast"
+  },
+  {
+    "username": "busargin_r",
+    "title": "Роман Бусаргин",
+    "default_region_id": "saratov-oblast"
+  },
+  {
+    "username": "bocharov34",
+    "title": "Андрей Бочаров",
+    "default_region_id": "volgograd-oblast"
+  },
+  {
+    "username": "rk_gov",
+    "title": "Правительство Республики Крым",
+    "default_region_id": "crimea"
+  },
+  {
+    "username": "razvozhaev",
+    "title": "Михаил Развожаев",
+    "default_region_id": "sevastopol"
+  },
+  {
+    "username": "sevastopol_official",
+    "title": "Правительство Севастополя",
+    "default_region_id": "sevastopol"
   }
 ]

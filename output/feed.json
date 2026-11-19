@@ -1,16 +1,63 @@
 {
-  "updatedAt": "2026-11-19T19:56:50Z",
+  "updatedAt": "2026-11-19T20:14:44Z",
   "alerts": [
     {
-      "id": "rostov-oblast-danger-1795118166",
+      "id": "kursk-oblast-danger-1795119234",
+      "regionId": "kursk-oblast",
+      "regionName": "Курская область",
+      "level": "danger",
+      "summary": "Курск и близлежащие Тревога по БПЛА сохраняется Соблюдайте меры безопасности",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:13:54Z",
+      "expiresAt": "2026-11-19T21:03:54Z",
+      "locality": "Курск"
+    },
+    {
+      "id": "dnr-danger-1795118918",
+      "regionId": "dnr",
+      "regionName": "Донецкая Народная Республика",
+      "level": "danger",
+      "summary": "Моспино и близлежащие, тревога по БПЛА ДНР",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:08:38Z",
+      "expiresAt": "2026-11-19T20:58:38Z"
+    },
+    {
+      "id": "lnr-danger-1795118682",
+      "regionId": "lnr",
+      "regionName": "Луганская Народная Республика",
+      "level": "danger",
+      "summary": "Алчевск Брянка Стаханов И близлежащие Тревога по БПЛА сохраняется ЛНР",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:04:42Z",
+      "expiresAt": "2026-11-19T20:54:42Z",
+      "locality": "Стаханов, Алчевск, Брянка"
+    },
+    {
+      "id": "sevastopol-danger-1795118596",
+      "regionId": "sevastopol",
+      "regionName": "Севастополь",
+      "level": "danger",
+      "summary": "Севастополь и близлежащие Ракетная опасность",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-19T20:03:16Z",
+      "expiresAt": "2026-11-19T20:53:16Z"
+    },
+    {
+      "id": "rostov-oblast-danger-1795118437",
       "regionId": "rostov-oblast",
       "regionName": "Ростовская область",
       "level": "danger",
-      "summary": "Ростовская область - опасность по БПЛА по югу. 📡",
+      "summary": "Таганрог и близлежащие Тревога по БПЛА Ростовская область",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:56:06Z",
-      "expiresAt": "2026-11-19T20:46:06Z"
+      "timestamp": "2026-11-19T20:00:37Z",
+      "expiresAt": "2026-11-19T20:50:37Z",
+      "locality": "Таганрог"
     },
     {
       "id": "kherson-oblast-danger-1795117529",
@@ -24,17 +71,6 @@
       "expiresAt": "2026-11-19T20:35:29Z"
     },
     {
-      "id": "crimea-danger-1795117480",
-      "regionId": "crimea",
-      "regionName": "Республика Крым",
-      "level": "danger",
-      "summary": "пос. Старый Крым Тревога по БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:44:40Z",
-      "expiresAt": "2026-11-19T20:34:40Z"
-    },
-    {
       "id": "zaporizhzhia-oblast-danger-1795117289",
       "regionId": "zaporizhzhia-oblast",
       "regionName": "Запорожская область",
@@ -43,18 +79,8 @@
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
       "timestamp": "2026-11-19T19:41:29Z",
-      "expiresAt": "2026-11-19T20:31:29Z"
-    },
-    {
-      "id": "kursk-oblast-danger-1795117181",
-      "regionId": "kursk-oblast",
-      "regionName": "Курская область",
-      "level": "danger",
-      "summary": "Курская область, Орловская область - опасность по БПЛА сохраняется. 📡",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:39:41Z",
-      "expiresAt": "2026-11-19T20:29:41Z"
+      "expiresAt": "2026-11-19T20:31:29Z",
+      "locality": "Бердянск"
     },
     {
       "id": "oryol-oblast-danger-1795117181",
@@ -66,28 +92,6 @@
       "sourceURL": "https://radar-map.ru/",
       "timestamp": "2026-11-19T19:39:41Z",
       "expiresAt": "2026-11-19T20:29:41Z"
-    },
-    {
-      "id": "dnr-danger-1795116958",
-      "regionId": "dnr",
-      "regionName": "Донецкая Народная Республика",
-      "level": "danger",
-      "summary": "Володарское Мангуш Ялта Юрьевка Мариуполь Тревога по БПЛА сохраняется ДНР",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:35:58Z",
-      "expiresAt": "2026-11-19T20:25:58Z"
-    },
-    {
-      "id": "lnr-danger-1795116869",
-      "regionId": "lnr",
-      "regionName": "Луганская Народная Республика",
-      "level": "danger",
-      "summary": "Ирмино Стаханов Алчевск Брянка И близлежащие Тревога по БПЛА ЛНР",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:34:29Z",
-      "expiresAt": "2026-11-19T20:24:29Z"
     },
     {
       "id": "bryansk-oblast-danger-1795116495",

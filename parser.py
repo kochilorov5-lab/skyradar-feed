@@ -33,36 +33,220 @@ ALL_CLEAR_RE = re.compile(r"отбой|опасность снята|трево�
 STAMP_RE = re.compile(r"\d{2}\.\d{2}\.\d{4}\s+\d{2}:\d{2}")
 PROMO_RE = re.compile(r"карта опасностей.*$|radar-vrv\.ru|локатор россии.*$", re.IGNORECASE)
 
-# Идентификаторы совпадают с пресетами SkyRadar там, где регион уже есть в приложении.
-KNOWN_REGIONS: list[tuple[str, str, tuple[str, ...]]] = [
-    ("moscow", "Москва", ("москва", "город москва")),
-    ("moscow-oblast", "Московская область", ("московская область", "подмосковье")),
-    ("saint-petersburg", "Санкт-Петербург", ("санкт-петербург", "петербург", "спб")),
-    ("leningrad-oblast", "Ленинградская область", ("ленинградская область", "ленобласть")),
-    ("belgorod-oblast", "Белгородская область", ("белгородская область", "белгород")),
-    ("kursk-oblast", "Курская область", ("курская область", "курск")),
-    ("bryansk-oblast", "Брянская область", ("брянская область", "брянск")),
-    ("voronezh-oblast", "Воронежская область", ("воронежская область", "воронеж")),
-    ("rostov-oblast", "Ростовская область", ("ростовская область", "ростов-на-дону", "ростов")),
-    ("krasnodar-krai", "Краснодарский край", ("краснодарский край", "краснодар", "кубань")),
-    ("tatarstan", "Республика Татарстан", ("республика татарстан", "татарстан", "казань")),
-    ("samara-oblast", "Самарская область", ("самарская область", "самара")),
-    ("nizhny-novgorod-oblast", "Нижегородская область", ("нижегородская область", "нижний новгород")),
-    ("sverdlovsk-oblast", "Свердловская область", ("свердловская область", "екатеринбург")),
-    ("crimea", "Республика Крым", ("республика крым", "автономная республика крым", "крым")),
-    ("sevastopol", "Севастополь", ("севастополь",)),
-    ("dnr", "Донецкая Народная Республика", ("донецкая народная республика", "днр")),
-    ("lnr", "Луганская Народная Республика", ("луганская народная республика", "лнр")),
-    ("kherson-oblast", "Херсонская область", ("херсонская область", "херсон")),
-    ("zaporizhzhia-oblast", "Запорожская область", ("запорожская область", "запорожье")),
-    ("lipetsk-oblast", "Липецкая область", ("липецкая область", "липецк")),
-    ("smolensk-oblast", "Смоленская область", ("смоленская область", "смоленск")),
-    ("oryol-oblast", "Орловская область", ("орловская область", "орёл", "орел")),
-    ("kaluga-oblast", "Калужская область", ("калужская область", "калуга")),
-    ("tula-oblast", "Тульская область", ("тульская область", "тула")),
-    ("ryazan-oblast", "Рязанская область", ("рязанская область", "рязань")),
-    ("tambov-oblast", "Тамбовская область", ("тамбовская область", "тамбов")),
+# 89 субъектов. Идентификаторы пресетов SkyRadar не меняются.
+# Формат: regionId, regionName, дополнительные имена без официального названия.
+REGIONS: list[tuple[str, str, tuple[str, ...]]] = [
+    ("adygea", "Республика Адыгея", ("адыгея",)),
+    ("altai", "Республика Алтай", ("республика алтай", "горный алтай")),
+    ("bashkortostan", "Республика Башкортостан", ("башкортостан", "башкирия")),
+    ("buryatia", "Республика Бурятия", ("бурятия",)),
+    ("chechnya", "Чеченская Республика", ("чеченская республика", "чечня")),
+    ("chuvashia", "Чувашская Республика", ("чувашская республика", "чувашия")),
+    ("crimea", "Республика Крым", ("крым", "автономная республика крым")),
+    ("dagestan", "Республика Дагестан", ("дагестан",)),
+    ("dnr", "Донецкая Народная Республика", ("днр",)),
+    ("ingushetia", "Республика Ингушетия", ("ингушетия",)),
+    ("kabardino-balkaria", "Кабардино-Балкарская Республика", ("кабардино-балкарская республика", "кабардино-балкария", "кбр")),
+    ("kalmykia", "Республика Калмыкия", ("калмыкия",)),
+    ("karachay-cherkessia", "Карачаево-Черкесская Республика", ("карачаево-черкесская республика", "карачаево-черкесия", "кчр")),
+    ("karelia", "Республика Карелия", ("карелия",)),
+    ("khakassia", "Республика Хакасия", ("хакасия",)),
+    ("komi", "Республика Коми", ("коми",)),
+    ("lnr", "Луганская Народная Республика", ("лнр",)),
+    ("mari-el", "Республика Марий Эл", ("марий эл",)),
+    ("mordovia", "Республика Мордовия", ("мордовия",)),
+    ("north-ossetia", "Республика Северная Осетия — Алания", ("северная осетия", "алания", "северная осетия - алания")),
+    ("sakha", "Республика Саха (Якутия)", ("республика саха", "якутия")),
+    ("tatarstan", "Республика Татарстан", ("татарстан",)),
+    ("tuva", "Республика Тыва", ("тыва", "тува")),
+    ("udmurtia", "Удмуртская Республика", ("удмуртская республика", "удмуртия")),
+    ("altai-krai", "Алтайский край", ()),
+    ("zabaykalsky-krai", "Забайкальский край", ("забайкалье",)),
+    ("kamchatka-krai", "Камчатский край", ("камчатка",)),
+    ("krasnodar-krai", "Краснодарский край", ("кубань",)),
+    ("krasnoyarsk-krai", "Красноярский край", ()),
+    ("perm-krai", "Пермский край", ()),
+    ("primorsky-krai", "Приморский край", ("приморье",)),
+    ("stavropol-krai", "Ставропольский край", ("ставрополье",)),
+    ("khabarovsk-krai", "Хабаровский край", ()),
+    ("amur-oblast", "Амурская область", ()),
+    ("arkhangelsk-oblast", "Архангельская область", ()),
+    ("astrakhan-oblast", "Астраханская область", ()),
+    ("belgorod-oblast", "Белгородская область", ()),
+    ("bryansk-oblast", "Брянская область", ()),
+    ("vladimir-oblast", "Владимирская область", ()),
+    ("volgograd-oblast", "Волгоградская область", ()),
+    ("vologda-oblast", "Вологодская область", ()),
+    ("voronezh-oblast", "Воронежская область", ()),
+    ("ivanovo-oblast", "Ивановская область", ()),
+    ("irkutsk-oblast", "Иркутская область", ()),
+    ("kaliningrad-oblast", "Калининградская область", ()),
+    ("kaluga-oblast", "Калужская область", ()),
+    ("kemerovo-oblast", "Кемеровская область", ("кузбасс", "кемеровская область — кузбасс")),
+    ("kirov-oblast", "Кировская область", ()),
+    ("kostroma-oblast", "Костромская область", ()),
+    ("kurgan-oblast", "Курганская область", ()),
+    ("kursk-oblast", "Курская область", ()),
+    ("leningrad-oblast", "Ленинградская область", ("ленобласть",)),
+    ("lipetsk-oblast", "Липецкая область", ()),
+    ("magadan-oblast", "Магаданская область", ()),
+    ("moscow-oblast", "Московская область", ("подмосковье",)),
+    ("murmansk-oblast", "Мурманская область", ()),
+    ("nizhny-novgorod-oblast", "Нижегородская область", ()),
+    ("novgorod-oblast", "Новгородская область", ()),
+    ("novosibirsk-oblast", "Новосибирская область", ()),
+    ("omsk-oblast", "Омская область", ()),
+    ("orenburg-oblast", "Оренбургская область", ()),
+    ("oryol-oblast", "Орловская область", ()),
+    ("penza-oblast", "Пензенская область", ()),
+    ("pskov-oblast", "Псковская область", ()),
+    ("rostov-oblast", "Ростовская область", ()),
+    ("ryazan-oblast", "Рязанская область", ()),
+    ("samara-oblast", "Самарская область", ()),
+    ("saratov-oblast", "Саратовская область", ()),
+    ("sakhalin-oblast", "Сахалинская область", ("сахалин",)),
+    ("sverdlovsk-oblast", "Свердловская область", ()),
+    ("smolensk-oblast", "Смоленская область", ()),
+    ("tambov-oblast", "Тамбовская область", ()),
+    ("tver-oblast", "Тверская область", ()),
+    ("tomsk-oblast", "Томская область", ()),
+    ("tula-oblast", "Тульская область", ()),
+    ("tyumen-oblast", "Тюменская область", ()),
+    ("ulyanovsk-oblast", "Ульяновская область", ()),
+    ("chelyabinsk-oblast", "Челябинская область", ()),
+    ("yaroslavl-oblast", "Ярославская область", ()),
+    ("kherson-oblast", "Херсонская область", ()),
+    ("zaporizhzhia-oblast", "Запорожская область", ("запорожье",)),
+    ("moscow", "Москва", ("город москва", "мск")),
+    ("saint-petersburg", "Санкт-Петербург", ("петербург", "спб", "санкт петербург")),
+    ("sevastopol", "Севастополь", ("город севастополь",)),
+    ("jewish-autonomous-oblast", "Еврейская автономная область", ("еао",)),
+    ("nenets-ao", "Ненецкий автономный округ", ("нао",)),
+    ("khanty-mansi-ao", "Ханты-Мансийский автономный округ — Югра", ("хмао", "югра", "ханты-мансийский автономный округ")),
+    ("chukotka-ao", "Чукотский автономный округ", ("чукотка",)),
+    ("yamalo-nenets-ao", "Ямало-Ненецкий автономный округ", ("янао", "ямал")),
 ]
+
+# Крупные города и пункты, которые в сводках называют чаще, чем сам субъект.
+CITIES: dict[str, tuple[str, ...]] = {
+    "crimea": ("Симферополь", "Ялта", "Керчь", "Евпатория", "Феодосия", "Джанкой", "Алушта", "Бахчисарай", "Судак", "Армянск", "Красноперекопск"),
+    "sevastopol": ("Севастополь",),
+    "dnr": ("Донецк", "Мариуполь", "Горловка", "Макеевка"),
+    "lnr": ("Луганск", "Алчевск", "Северодонецк", "Брянка", "Стаханов"),
+    "kherson-oblast": ("Херсон", "Геническ", "Скадовск"),
+    "zaporizhzhia-oblast": ("Запорожье", "Мелитополь", "Бердянск", "Энергодар"),
+    "krasnodar-krai": ("Краснодар", "Сочи", "Новороссийск", "Туапсе", "Анапа", "Геленджик", "Ейск", "Армавир", "Темрюк", "Крымск", "Тихорецк"),
+    "rostov-oblast": ("Ростов-на-Дону", "Таганрог", "Шахты", "Волгодонск", "Морозовск", "Миллерово", "Новочеркасск", "Батайск", "Азов", "Каменск-Шахтинский", "Гуково"),
+    "belgorod-oblast": ("Белгород", "Шебекино", "Грайворон", "Валуйки", "Старый Оскол", "Алексеевка"),
+    "kursk-oblast": ("Курск", "Суджа", "Рыльск", "Льгов", "Курчатов"),
+    "bryansk-oblast": ("Брянск", "Клинцы", "Стародуб", "Дятьково", "Унеча", "Почеп", "Трубчевск", "Суземка", "Севск"),
+    "lipetsk-oblast": ("Липецк", "Елец"),
+    "saratov-oblast": ("Саратов", "Энгельс", "Балаково", "Балашов", "Вольск"),
+    "nizhny-novgorod-oblast": ("Нижний Новгород", "Дзержинск", "Арзамас", "Саров", "Кстово"),
+    "tatarstan": ("Казань", "Елабуга", "Нижнекамск", "Альметьевск", "Набережные Челны", "Зеленодольск"),
+    "samara-oblast": ("Самара", "Тольятти", "Сызрань", "Новокуйбышевск", "Чапаевск"),
+    "moscow": ("Москва",),
+    "moscow-oblast": ("Химки", "Подольск", "Мытищи", "Балашиха", "Королёв", "Люберцы", "Одинцово", "Красногорск", "Коломна", "Серпухов", "Электросталь", "Домодедово", "Жуковский", "Дмитров", "Клин"),
+    "saint-petersburg": ("Санкт-Петербург",),
+    "leningrad-oblast": ("Гатчина", "Выборг", "Тихвин", "Сосновый Бор", "Кингисепп", "Волхов"),
+    "voronezh-oblast": ("Воронеж", "Борисоглебск", "Россошь", "Лиски", "Острогожск"),
+    "oryol-oblast": ("Орёл", "Ливны", "Мценск"),
+    "kaluga-oblast": ("Калуга", "Обнинск"),
+    "tula-oblast": ("Тула", "Новомосковск", "Алексин", "Щёкино", "Узловая"),
+    "smolensk-oblast": ("Смоленск", "Вязьма", "Рославль", "Ярцево", "Сафоново"),
+    "volgograd-oblast": ("Волгоград", "Волжский", "Камышин", "Урюпинск", "Михайловка"),
+    "sverdlovsk-oblast": ("Екатеринбург", "Нижний Тагил", "Каменск-Уральский", "Первоуральск"),
+    "bashkortostan": ("Уфа", "Стерлитамак", "Салават", "Нефтекамск"),
+    "chelyabinsk-oblast": ("Челябинск", "Магнитогорск", "Златоуст", "Миасс"),
+    "novosibirsk-oblast": ("Новосибирск", "Бердск"),
+    "omsk-oblast": ("Омск",),
+    "krasnoyarsk-krai": ("Красноярск", "Норильск", "Ачинск"),
+    "irkutsk-oblast": ("Иркутск", "Братск", "Ангарск"),
+    "kemerovo-oblast": ("Кемерово", "Новокузнецк", "Прокопьевск"),
+    "perm-krai": ("Пермь", "Березники"),
+    "stavropol-krai": ("Ставрополь", "Пятигорск", "Кисловодск", "Невинномысск", "Ессентуки", "Минеральные Воды"),
+    "dagestan": ("Махачкала", "Дербент", "Хасавюрт", "Каспийск"),
+    "chechnya": ("Грозный",),
+    "kabardino-balkaria": ("Нальчик",),
+    "karachay-cherkessia": ("Черкесск",),
+    "north-ossetia": ("Владикавказ",),
+    "ingushetia": ("Назрань", "Магас"),
+    "kalmykia": ("Элиста",),
+    "adygea": ("Майкоп",),
+    "astrakhan-oblast": ("Астрахань",),
+    "kaliningrad-oblast": ("Калининград",),
+    "murmansk-oblast": ("Мурманск",),
+    "arkhangelsk-oblast": ("Архангельск", "Северодвинск"),
+    "vologda-oblast": ("Вологда", "Череповец"),
+    "pskov-oblast": ("Псков", "Великие Луки"),
+    "novgorod-oblast": ("Великий Новгород",),
+    "tver-oblast": ("Тверь",),
+    "yaroslavl-oblast": ("Ярославль", "Рыбинск", "Ростов Великий"),
+    "ivanovo-oblast": ("Иваново",),
+    "vladimir-oblast": ("Владимир", "Ковров", "Муром"),
+    "kostroma-oblast": ("Кострома",),
+    "ryazan-oblast": ("Рязань",),
+    "tambov-oblast": ("Тамбов", "Мичуринск"),
+    "penza-oblast": ("Пенза",),
+    "ulyanovsk-oblast": ("Ульяновск", "Димитровград"),
+    "kirov-oblast": ("Киров",),
+    "orenburg-oblast": ("Оренбург", "Орск"),
+    "kurgan-oblast": ("Курган",),
+    "tyumen-oblast": ("Тюмень", "Тобольск"),
+    "khanty-mansi-ao": ("Сургут", "Нижневартовск", "Нефтеюганск", "Ханты-Мансийск"),
+    "yamalo-nenets-ao": ("Салехард", "Новый Уренгой", "Ноябрьск", "Надым"),
+    "chukotka-ao": ("Анадырь",),
+    "nenets-ao": ("Нарьян-Мар",),
+    "jewish-autonomous-oblast": ("Биробиджан",),
+    "amur-oblast": ("Благовещенск",),
+    "khabarovsk-krai": ("Хабаровск", "Комсомольск-на-Амуре"),
+    "primorsky-krai": ("Владивосток", "Находка", "Уссурийск"),
+    "kamchatka-krai": ("Петропавловск-Камчатский",),
+    "magadan-oblast": ("Магадан",),
+    "sakhalin-oblast": ("Южно-Сахалинск",),
+    "sakha": ("Якутск",),
+    "buryatia": ("Улан-Удэ",),
+    "zabaykalsky-krai": ("Чита",),
+    "tuva": ("Кызыл",),
+    "khakassia": ("Абакан",),
+    "altai": ("Горно-Алтайск",),
+    "altai-krai": ("Барнаул", "Бийск", "Рубцовск"),
+    "mari-el": ("Йошкар-Ола",),
+    "mordovia": ("Саранск",),
+    "chuvashia": ("Чебоксары",),
+    "udmurtia": ("Ижевск",),
+    "komi": ("Сыктывкар",),
+    "karelia": ("Петрозаводск",),
+    "tomsk-oblast": ("Томск",),
+}
+
+# Формы, которые нельзя получить простым окончанием.
+IRREGULAR_CITY_FORMS: dict[str, tuple[str, ...]] = {
+    "Ростов-на-Дону": ("ростов", "ростова", "ростове", "ростовом", "ростова-на-дону", "ростове-на-дону"),
+    "Нижний Новгород": ("нижнего новгорода", "нижнем новгороде", "нижнему новгороду"),
+    "Старый Оскол": ("старого оскола", "старом осколе", "старому осколу"),
+    "Набережные Челны": ("набережных челнов", "набережных челнах"),
+    "Великий Новгород": ("великого новгорода", "великом новгороде"),
+    "Великие Луки": ("великих лук", "великих луках"),
+    "Ростов Великий": ("ростова великого", "ростове великом"),
+    "Комсомольск-на-Амуре": ("комсомольска-на-амуре", "комсомольске-на-амуре"),
+    "Петропавловск-Камчатский": ("петропавловска-камчатского", "петропавловске-камчатском"),
+    "Каменск-Шахтинский": ("каменска-шахтинского", "каменске-шахтинском"),
+    "Каменск-Уральский": ("каменска-уральского", "каменске-уральском"),
+    "Санкт-Петербург": ("санкт-петербурга", "санкт-петербурге", "петербурга", "петербурге"),
+    "Орёл": ("орел", "орла", "орле", "орлом"),
+    "Елец": ("ельца", "ельце", "ельцом"),
+    "Валуйки": ("валуек", "валуйках", "валуйками"),
+    "Щёкино": ("щекино", "щекина", "щекине"),
+    "Королёв": ("королев", "королева", "королеве"),
+    "Йошкар-Ола": ("йошкар-олы", "йошкар-оле"),
+    "Улан-Удэ": ("улан-удэ", "улан-уде"),
+    "Минеральные Воды": ("минеральных вод", "минеральных водах"),
+    "Сосновый Бор": ("соснового бора", "сосновом бору"),
+    "Нарьян-Мар": ("нарьян-мара", "нарьян-маре"),
+    "Ханты-Мансийск": ("ханты-мансийска", "ханты-мансийске"),
+    "Южно-Сахалинск": ("южно-сахалинска", "южно-сахалинске"),
+}
 
 TRANSLIT = str.maketrans(
     {
@@ -94,36 +278,60 @@ def is_russian_subject(name: str) -> bool:
     return any(hint in lowered for hint in SUBJECT_HINT)
 
 
-def region_by_id(region_id: str) -> tuple[str, str] | None:
-    for known_id, title, _aliases in KNOWN_REGIONS:
-        if known_id == region_id:
-            return known_id, title
-    return None
+def normalize_place(value: str) -> str:
+    return value.lower().replace("ё", "е").replace("—", "-")
 
 
-def known_for(name: str) -> tuple[str, str] | None:
-    lowered = name.lower().strip()
-    for region_id, title, aliases in KNOWN_REGIONS:
-        if lowered == title.lower() or lowered in aliases:
-            return region_id, title
-    return None
+def inflect_city(display: str) -> set[str]:
+    """Грубые падежные формы. Составные названия не склоняются автоматически."""
+    base = normalize_place(display)
+    forms = {base}
+    if any(char in base for char in " -"):
+        return forms
+    vowels = set("аеёиоуыэюя")
+    if base.endswith("а"):
+        stem = base[:-1]
+        forms.update({stem + end for end in ("ы", "е", "у", "ой", "ою")})
+    elif base.endswith("я"):
+        stem = base[:-1]
+        forms.update({stem + end for end in ("и", "е", "ю", "ей")})
+    elif base.endswith("о"):
+        stem = base[:-1]
+        forms.update({stem + end for end in ("а", "е", "у", "ом")})
+    elif base.endswith("ы") or base.endswith(("цы", "ки")):
+        stem = base[:-1]
+        forms.update({stem + "ах", stem + "ами", stem + "ов", stem})
+    elif base.endswith("ь"):
+        stem = base[:-1]
+        forms.update({stem + end for end in ("и", "ью", "ю")})
+    elif base[-1] not in vowels:
+        forms.update({base + end for end in ("а", "у", "е", "ом", "ов")})
+    return forms
 
 
-def region_identity(name: str) -> tuple[str, str] | None:
-    if not is_russian_subject(name) and known_for(name) is None:
-        return None
-    found = known_for(name)
-    if found:
-        return found
-    return slugify(name), name.strip()
+def alias_catalog() -> list[tuple[str, str, str, str | None]]:
+    found: dict[str, tuple[str, str, str, str | None]] = {}
 
+    def add(alias: str, region_id: str, title: str, locality: str | None) -> None:
+        key = normalize_place(alias)
+        if len(key) < 3:
+            return
+        current = found.get(key)
+        row = (key, region_id, title, locality)
+        if current is None or (current[3] is not None and locality is None):
+            found[key] = row
 
-def alias_catalog() -> list[tuple[str, str, str]]:
-    rows: list[tuple[str, str, str]] = []
-    for region_id, title, aliases in KNOWN_REGIONS:
-        rows.append((title.lower(), region_id, title))
+    titles = {region_id: title for region_id, title, _aliases in REGIONS}
+    for region_id, title, aliases in REGIONS:
+        add(title, region_id, title, None)
         for alias in aliases:
-            rows.append((alias, region_id, title))
+            add(alias, region_id, title, None)
+        for city in CITIES.get(region_id, ()):
+            forms = inflect_city(city)
+            forms.update(normalize_place(item) for item in IRREGULAR_CITY_FORMS.get(city, ()))
+            for form in forms:
+                add(form, region_id, titles[region_id], city)
+    rows = list(found.values())
     rows.sort(key=lambda item: len(item[0]), reverse=True)
     return rows
 
@@ -131,12 +339,37 @@ def alias_catalog() -> list[tuple[str, str, str]]:
 ALIASES = alias_catalog()
 
 
-def mentioned_regions(text: str) -> list[tuple[str, str]]:
-    lowered = text.lower()
+def region_by_id(region_id: str) -> tuple[str, str] | None:
+    for known_id, title, _aliases in REGIONS:
+        if known_id == region_id:
+            return known_id, title
+    return None
+
+
+def resolve_place(name: str) -> tuple[str, str, str | None] | None:
+    lowered = normalize_place(name).strip()
+    for alias, region_id, title, locality in ALIASES:
+        if alias == lowered:
+            return region_id, title, locality
+    return None
+
+
+def region_identity(name: str) -> tuple[str, str, str | None] | None:
+    found = resolve_place(name)
+    if found:
+        return found
+    if not is_russian_subject(name):
+        return None
+    return slugify(name), name.strip(), None
+
+
+def mentioned_regions(text: str) -> list[tuple[str, str, str | None]]:
+    lowered = normalize_place(text)
     occupied = [False] * len(lowered)
-    found: list[tuple[str, str]] = []
+    order: list[tuple[str, str]] = []
+    localities: dict[str, list[str]] = {}
     seen: set[str] = set()
-    for alias, region_id, title in ALIASES:
+    for alias, region_id, title, locality in ALIASES:
         start = 0
         while True:
             index = lowered.find(alias, start)
@@ -150,10 +383,24 @@ def mentioned_regions(text: str) -> list[tuple[str, str]]:
                     occupied[pos] = True
                 if region_id not in seen:
                     seen.add(region_id)
-                    found.append((region_id, title))
+                    order.append((region_id, title))
+                if locality and locality not in localities.setdefault(region_id, []):
+                    localities[region_id].append(locality)
                 break
             start = index + 1
-    return found
+    return [
+        (region_id, title, ", ".join(localities[region_id]) if localities.get(region_id) else None)
+        for region_id, title in order
+    ]
+
+
+def describe_summary(summary: str, locality: str | None) -> str:
+    if not locality:
+        return summary
+    folded = normalize_place(summary)
+    if all(normalize_place(part) in folded for part in locality.split(", ")):
+        return summary
+    return f"{locality}. {summary}"[:360]
 
 
 def latest_block(source_text: str) -> str:
@@ -239,6 +486,9 @@ def build_alerts(state: dict, now: datetime) -> list[dict]:
         parent = str(city.get("region") or "")
         identity = region_identity(parent)
         if identity is None:
+            city_name = str(city.get("name") or city.get("title") or "")
+            identity = resolve_place(city_name) or (resolve_place(parent) if parent else None)
+        if identity is None:
             continue
         merged = stronger(city_level.get(identity[0]), level_from_flags(city))
         if merged:
@@ -255,14 +505,19 @@ def build_alerts(state: dict, now: datetime) -> list[dict]:
         if not summary:
             continue
         named = mentioned_regions(summary)
-        key_id, key_title = identity
-        if named and all(region_id != key_id for region_id, _title in named):
+        key_id, key_title, key_locality = identity
+        if named and all(region_id != key_id for region_id, _title, _locality in named):
             targets = named
         else:
-            targets = [(key_id, key_title)]
+            locality = key_locality
+            for region_id, _title, found_locality in named:
+                if region_id == key_id and found_locality:
+                    locality = found_locality
+                    break
+            targets = [(key_id, key_title, locality)]
         moment = event_time(item, summary, now)
         text_level = level_from_text(summary)
-        for region_id, region_name in targets:
+        for region_id, region_name, locality in targets:
             level = text_level or level_from_flags(item)
             if level is None and region_id == key_id:
                 level = city_level.get(region_id)
@@ -277,13 +532,15 @@ def build_alerts(state: dict, now: datetime) -> list[dict]:
                 "regionId": region_id,
                 "regionName": region_name,
                 "level": level,
-                "summary": summary,
+                "summary": describe_summary(summary, locality),
                 "sourceName": "radar-map.ru",
                 "sourceURL": PAGE_URL,
                 "timestamp": iso_z(moment),
                 "expiresAt": iso_z(expires),
                 "_moment": moment,
             }
+            if locality:
+                alert["locality"] = locality
             previous = chosen.get(region_id)
             if previous is None or LEVEL_RANK[level] > LEVEL_RANK[previous["level"]] or (
                 level == previous["level"] and moment > previous["_moment"]
@@ -342,14 +599,16 @@ def parse_telegram_time(raw: str) -> datetime | None:
     return moment.astimezone(timezone.utc)
 
 
-def channel_targets(text: str, default_region_id: str | None) -> list[tuple[str, str]]:
+def channel_targets(text: str, default_region_id: str | None) -> list[tuple[str, str, str | None]]:
     mentioned = mentioned_regions(text)
     if mentioned:
         return mentioned
     if not default_region_id:
         return []
     fallback = region_by_id(default_region_id)
-    return [fallback] if fallback else []
+    if fallback is None:
+        return []
+    return [(fallback[0], fallback[1], None)]
 
 
 def alerts_from_channel(source: dict, now: datetime) -> list[dict]:
@@ -380,21 +639,22 @@ def alerts_from_channel(source: dict, now: datetime) -> list[dict]:
         expires = moment + ttl
         if expires <= now:
             continue
-        for region_id, region_name in targets:
-            alerts.append(
-                {
-                    "id": f"{region_id}-{level}-{int(moment.timestamp())}",
-                    "regionId": region_id,
-                    "regionName": region_name,
-                    "level": level,
-                    "summary": summary,
-                    "sourceName": source["title"],
-                    "sourceURL": f"https://t.me/{channel_name}/{post_id}",
-                    "timestamp": iso_z(moment),
-                    "expiresAt": iso_z(expires),
-                    "_moment": moment,
-                }
-            )
+        for region_id, region_name, locality in targets:
+            alert = {
+                "id": f"{region_id}-{level}-{int(moment.timestamp())}",
+                "regionId": region_id,
+                "regionName": region_name,
+                "level": level,
+                "summary": describe_summary(summary, locality),
+                "sourceName": source["title"],
+                "sourceURL": f"https://t.me/{channel_name}/{post_id}",
+                "timestamp": iso_z(moment),
+                "expiresAt": iso_z(expires),
+                "_moment": moment,
+            }
+            if locality:
+                alert["locality"] = locality
+            alerts.append(alert)
     return alerts
 
 
