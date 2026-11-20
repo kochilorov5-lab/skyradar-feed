@@ -22,8 +22,8 @@ TELEGRAM_USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 MSK = timezone(timedelta(hours=3))
-ACTIVE_TTL = timedelta(minutes=50)
-CLEAR_TTL = timedelta(minutes=20)
+ACTIVE_TTL = timedelta(minutes=240)
+CLEAR_TTL = timedelta(minutes=60)
 DEDUP_WINDOW = timedelta(minutes=15)
 LEVEL_RANK = {"danger": 4, "attention": 3, "allClear": 2, "clear": 1}
 DANGER_RE = re.compile(r"опасност|тревог|ракет|взрыв|каб|авиаудар|\bпво\b", re.IGNORECASE)
