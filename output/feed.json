@@ -1,119 +1,39 @@
 {
-  "updatedAt": "2026-11-19T20:18:41Z",
+  "updatedAt": "2026-11-20T01:27:24Z",
   "alerts": [
     {
-      "id": "zaporizhzhia-oblast-danger-1795119415",
+      "id": "zaporizhzhia-oblast-danger-1795137424",
       "regionId": "zaporizhzhia-oblast",
       "regionName": "Запорожская область",
       "level": "danger",
-      "summary": "Приморск Бердянск И ближайшее Тревога по БПЛА сохраняется Ещё фиксации",
+      "summary": "Бердянск и близлежащие, тревога по БпЛА",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:16:55Z",
-      "expiresAt": "2026-11-19T21:06:55Z",
+      "timestamp": "2026-11-20T01:17:04Z",
+      "expiresAt": "2026-11-20T02:07:04Z",
       "locality": "Бердянск"
     },
     {
-      "id": "rostov-oblast-danger-1795119317",
-      "regionId": "rostov-oblast",
-      "regionName": "Ростовская область",
+      "id": "stavropol-krai-danger-1795136457",
+      "regionId": "stavropol-krai",
+      "regionName": "Ставропольский край",
       "level": "danger",
-      "summary": "Азов и близлежащие Тревога по БПЛА",
+      "summary": "Ставропольский край Опасность по БПЛА",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:15:17Z",
-      "expiresAt": "2026-11-19T21:05:17Z",
-      "locality": "Азов"
+      "timestamp": "2026-11-20T01:00:57Z",
+      "expiresAt": "2026-11-20T01:50:57Z"
     },
     {
-      "id": "kursk-oblast-danger-1795119234",
-      "regionId": "kursk-oblast",
-      "regionName": "Курская область",
+      "id": "crimea-danger-1795135149",
+      "regionId": "crimea",
+      "regionName": "Республика Крым",
       "level": "danger",
-      "summary": "Курск и близлежащие Тревога по БПЛА сохраняется Соблюдайте меры безопасности",
+      "summary": "Островское Мельничное и близлежащие Опасность по БПЛА Республика Крым",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:13:54Z",
-      "expiresAt": "2026-11-19T21:03:54Z",
-      "locality": "Курск"
-    },
-    {
-      "id": "dnr-danger-1795118918",
-      "regionId": "dnr",
-      "regionName": "Донецкая Народная Республика",
-      "level": "danger",
-      "summary": "Моспино и близлежащие, тревога по БПЛА ДНР",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:08:38Z",
-      "expiresAt": "2026-11-19T20:58:38Z"
-    },
-    {
-      "id": "lnr-danger-1795118682",
-      "regionId": "lnr",
-      "regionName": "Луганская Народная Республика",
-      "level": "danger",
-      "summary": "Алчевск Брянка Стаханов И близлежащие Тревога по БПЛА сохраняется ЛНР",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:04:42Z",
-      "expiresAt": "2026-11-19T20:54:42Z",
-      "locality": "Стаханов, Алчевск, Брянка"
-    },
-    {
-      "id": "sevastopol-danger-1795118596",
-      "regionId": "sevastopol",
-      "regionName": "Севастополь",
-      "level": "danger",
-      "summary": "Севастополь и близлежащие Ракетная опасность",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:03:16Z",
-      "expiresAt": "2026-11-19T20:53:16Z"
-    },
-    {
-      "id": "kherson-oblast-danger-1795117529",
-      "regionId": "kherson-oblast",
-      "regionName": "Херсонская область",
-      "level": "danger",
-      "summary": "Чаплинка и близлежащие Тревога по БПЛА Херсонская область РФ",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:45:29Z",
-      "expiresAt": "2026-11-19T20:35:29Z"
-    },
-    {
-      "id": "oryol-oblast-danger-1795117181",
-      "regionId": "oryol-oblast",
-      "regionName": "Орловская область",
-      "level": "danger",
-      "summary": "Курская область, Орловская область - опасность по БПЛА сохраняется. 📡",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:39:41Z",
-      "expiresAt": "2026-11-19T20:29:41Z"
-    },
-    {
-      "id": "bryansk-oblast-attention-1795118907",
-      "regionId": "bryansk-oblast",
-      "regionName": "Брянская область",
-      "level": "attention",
-      "summary": "Жуковка и близлежащие, Брянская область - пролёты БПЛА в сторону Гришина Слобода, Старь, Бытошь, далее на Людиново, Бетлица, Киров, Калужской области",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T20:08:27Z",
-      "expiresAt": "2026-11-19T20:58:27Z"
-    },
-    {
-      "id": "kaluga-oblast-attention-1795117797",
-      "regionId": "kaluga-oblast",
-      "regionName": "Калужская область",
-      "level": "attention",
-      "summary": "Бояновичи, ​Хвастовичский район, Калужская область - пролёты БПЛА со стороны Брянска в сторону Киевской трассы",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-19T19:49:57Z",
-      "expiresAt": "2026-11-19T20:39:57Z"
+      "timestamp": "2026-11-20T00:39:09Z",
+      "expiresAt": "2026-11-20T01:29:09Z"
     }
   ]
 }
