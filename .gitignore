@@ -2,3 +2,6 @@ debug/
 __pycache__/
 .venv/
 .DS_Store
+xcuserdata/
+DerivedData/
+build/

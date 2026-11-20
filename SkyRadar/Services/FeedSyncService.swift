@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import WidgetKit
 
 /// Ошибки сети и разбора внешнего фида открытых сводок.
 nonisolated enum FeedSyncError: LocalizedError {
     case insecureURL
     case invalidResponse
     case httpStatus(Int)
+    case unreadableFeed
 
     var errorDescription: String? {
         switch self {
@@ -21,6 +23,8 @@ nonisolated enum FeedSyncError: LocalizedError {
             "Сервер вернул нераспознанный ответ."
         case .httpStatus(let code):
             "Сервер фида ответил кодом \(code)."
+        case .unreadableFeed:
+            "Не удалось разобрать JSON фида."
         }
     }
 }
@@ -28,6 +32,9 @@ nonisolated enum FeedSyncError: LocalizedError {
 /// Синхронизирует открытые сводки и держит последний успешный пакет в Caches.
 struct FeedSyncService {
     static let shared = FeedSyncService()
+
+    /// Публичный JSON на GitHub. Подмена хранится в UserDefaults и сбрасывается на этот адрес.
+    static let defaultFeedURL = URL(string: "https://raw.githubusercontent.com/kochilorov5-lab/skyradar-feed/main/output/feed.json")!
 
     private static let cacheFolderName = "SkyRadar"
     private static let cacheFileName = "radar-feed.json"
@@ -54,13 +61,13 @@ struct FeedSyncService {
         return Date(timeIntervalSince1970: interval)
     }
 
-    /// Скачивает фид по HTTPS, убирает просроченное и дубли, затем пишет кэш.
+    /// Скачивает свежий HTTPS-фид, минуя локальный кэш URLSession, затем пишет диск и снимает TTL.
     func sync(from url: URL) async throws -> RadarFeedPayload {
         guard url.scheme?.lowercased() == "https" else {
             throw FeedSyncError.insecureURL
         }
 
-        let (data, response) = try await session.data(from: url)
+        let (data, response) = try await session.data(for: freshRequest(url))
         guard let http = response as? HTTPURLResponse else {
             throw FeedSyncError.invalidResponse
         }
@@ -68,11 +75,53 @@ struct FeedSyncService {
             throw FeedSyncError.httpStatus(http.statusCode)
         }
 
-        let decoded = try JSONDecoder().decode(RadarFeedPayload.self, from: data)
+        let decoded: RadarFeedPayload
+        do {
+            decoded = try JSONDecoder().decode(RadarFeedPayload.self, from: data)
+        } catch {
+            throw FeedSyncError.unreadableFeed
+        }
         let prepared = prepare(decoded, now: Date())
         storeLastSuccessfulUpdate(Date())
         try? writeCache(decoded)
+        publishWidgetSnapshot(prepared, subscribedRegionIds: storedRegionIds())
         return prepared
+    }
+
+    /// Кладёт актуальный пакет и выбранные регионы в общий контейнер и обновляет виджеты.
+    func publishWidgetSnapshot(_ payload: RadarFeedPayload, subscribedRegionIds: Set<String>) {
+        let alerts = payload.alerts.map { alert in
+            SharedWidgetAlert(
+                id: alert.id,
+                regionId: alert.regionId,
+                regionName: alert.regionName,
+                level: alert.level.rawValue,
+                summary: alert.summary,
+                timestamp: alert.timestamp,
+                expiresAt: alert.expiresAt
+            )
+        }
+        WidgetSnapshotStore.save(
+            SharedWidgetSnapshot(
+                updatedAt: payload.updatedAt,
+                subscribedRegionIds: Array(subscribedRegionIds).sorted(),
+                alerts: alerts
+            )
+        )
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func storedRegionIds() -> Set<String> {
+        Set(defaults.stringArray(forKey: WidgetSnapshotStore.regionsKey) ?? [])
+    }
+
+    /// Запрос без локального кэша: GitHub Raw иначе может отдать старый JSON из URLCache.
+    private func freshRequest(_ url: URL) -> URLRequest {
+        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 25)
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        return request
     }
 
     /// Демо-фид с живыми метками времени. Просроченные и повторы уже сняты.

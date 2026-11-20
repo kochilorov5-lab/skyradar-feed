@@ -9,8 +9,10 @@ import SwiftUI
 
 /// Главный экран SkyRadar.
 struct MainRadarView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var model = RadarViewModel()
     @State private var showsRegions = false
+    @State private var showsFeedSettings = false
     @Namespace private var scopeNamespace
 
     var body: some View {
@@ -26,11 +28,11 @@ struct MainRadarView: View {
                         freshness: model.freshness,
                         originTitle: model.feedOrigin.title
                     )
-                    controlBar
-                    regionStrip
                     if let loadError = model.loadError {
                         noteCard(loadError, tint: ThreatLevel.attention.accent)
                     }
+                    controlBar
+                    regionStrip
                     if let notice = model.notice {
                         noteCard(notice, tint: ThreatLevel.clear.accent)
                     }
@@ -48,8 +50,16 @@ struct MainRadarView: View {
         .sheet(isPresented: $showsRegions) {
             RegionPickerSheet(model: model)
         }
+        .sheet(isPresented: $showsFeedSettings) {
+            FeedURLSheet(model: model)
+        }
         .task {
             await model.start()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                Task { await model.scheduleBackgroundRefresh() }
+            }
         }
         .preferredColorScheme(.dark)
         .animation(.spring(response: 0.48, dampingFraction: 0.78), value: model.headlineLevel)
@@ -132,6 +142,33 @@ struct MainRadarView: View {
                 glows: model.isDemoAlarmOn,
                 isPulsing: model.isDemoAlarmOn
             )
+
+            Button {
+                showsFeedSettings = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "link")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(model.headlineLevel.accent)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Адрес фида")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                        Text(model.isUsingDefaultFeedURL ? "Публичный фид по умолчанию" : "Свой адрес")
+                            .font(.caption)
+                            .foregroundStyle(Color.white.opacity(0.6))
+                    }
+                    Spacer(minLength: 0)
+                    Text(model.feedOrigin.title)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(model.headlineLevel.accent)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+            }
+            .buttonStyle(.plain)
+            .liquidGlass(tint: model.headlineLevel.accent, cornerRadius: 22, material: .thinMaterial, glows: false)
+            .accessibilityLabel("Настройки адреса фида")
         }
     }
 
@@ -184,12 +221,18 @@ struct MainRadarView: View {
 
             if model.visibleAlerts.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Актуальных сводок нет")
+                    Text(model.feedOrigin == .empty ? "Нет данных" : "Актуальных сводок нет")
                         .font(.headline)
                         .foregroundStyle(.white)
-                    Text("Просроченные записи скрыты. Обновите фид или включите демо-тревогу.")
+                    Text(emptyFeedDetail)
                         .font(.subheadline)
                         .foregroundStyle(Color.white.opacity(0.68))
+                    Text(model.feedOrigin.title)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(model.headlineLevel.accent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .liquidGlass(tint: model.headlineLevel.accent, cornerRadius: 10, material: .thinMaterial, glows: false)
                 }
                 .padding(18)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -231,6 +274,19 @@ struct MainRadarView: View {
             }
     }
 
+    private var emptyFeedDetail: String {
+        switch model.feedOrigin {
+        case .empty:
+            "Удалённый фид не ответил, сохранённой копии на устройстве нет."
+        case .cache:
+            "В кэше не осталось актуальных записей. Просроченные сводки скрыты."
+        case .remote:
+            "Свежий фид не содержит актуальных сводок. Просроченные записи скрыты."
+        case .demo:
+            "В демо-данных нет сводок для выбранного фильтра."
+        }
+    }
+
     private var demoBinding: Binding<Bool> {
         Binding(
             get: { model.isDemoAlarmOn },
@@ -241,6 +297,129 @@ struct MainRadarView: View {
                 Task { await model.setDemoAlarm(enabled) }
             }
         )
+    }
+}
+
+/// Шторка адреса фида: правка, сохранение и сброс на публичный JSON.
+struct FeedURLSheet: View {
+    var model: RadarViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft = ""
+    @State private var validation = ""
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    notificationCard
+                    Text("Пока демо-тревога выключена, сводки берутся с этого HTTPS-адреса. При ошибке сети остаётся кэш, без подмешивания демо-данных.")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.white.opacity(0.72))
+
+                    TextField("https://", text: $draft, axis: .vertical)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.URL)
+                        .lineLimit(3...6)
+                        .padding(14)
+                        .liquidGlass(tint: Color.white.opacity(0.4), cornerRadius: 20, material: .thinMaterial, glows: false)
+
+                    if !validation.isEmpty {
+                        Text(validation)
+                            .font(.caption)
+                            .foregroundStyle(ThreatLevel.attention.accent)
+                    }
+
+                    Button {
+                        guard model.applyFeedURL(draft) else {
+                            validation = "Укажите полный адрес фида по HTTPS."
+                            return
+                        }
+                        validation = ""
+                        dismiss()
+                        Task { await model.refresh(manual: true) }
+                    } label: {
+                        Text("Сохранить и обновить")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.white)
+                    .liquidGlass(tint: ThreatLevel.clear.accent, cornerRadius: 18, material: .thinMaterial, glows: true)
+
+                    Button {
+                        model.resetFeedURL()
+                        draft = model.feedURLString
+                        validation = ""
+                        dismiss()
+                        Task { await model.refresh(manual: true) }
+                    } label: {
+                        Text("Сбросить на адрес по умолчанию")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.white)
+                    .liquidGlass(tint: Color.white.opacity(0.35), cornerRadius: 18, material: .thinMaterial, glows: false)
+                }
+                .padding(20)
+            }
+            .scrollIndicators(.hidden)
+            .background {
+                ZStack {
+                    Color(red: 0.02, green: 0.035, blue: 0.06)
+                    Color.white.opacity(0.02)
+                }
+                .ignoresSafeArea()
+            }
+            .navigationTitle("Фид")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Готово") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(.ultraThinMaterial)
+        .task {
+            draft = model.feedURLString
+            await model.refreshNotificationStatus()
+        }
+    }
+
+    /// Компактный статус пушей: проверка и запрос без отдельного экрана.
+    private var notificationCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(model.notificationStatusTitle)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
+            Text("Новые danger и attention, а также переход в allClear по выбранным регионам.")
+                .font(.caption)
+                .foregroundStyle(Color.white.opacity(0.62))
+            if let backgroundRefreshNote = model.backgroundRefreshNote {
+                Text(backgroundRefreshNote)
+                    .font(.caption)
+                    .foregroundStyle(ThreatLevel.attention.accent)
+            }
+            Button {
+                Task { await model.reviewNotificationAccess() }
+            } label: {
+                Text("Проверить / Запросить уведомления")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            .liquidGlass(tint: ThreatLevel.attention.accent, cornerRadius: 18, material: .thinMaterial, glows: false)
+        }
+        .padding(14)
+        .liquidGlass(tint: Color.white.opacity(0.35), cornerRadius: 22, material: .thinMaterial, glows: false)
     }
 }
 

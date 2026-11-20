@@ -2,13 +2,34 @@
 //  NotificationManager.swift
 //  SkyRadar
 //
-//  Локальные уведомления только по выбранным районам и статусам danger / allClear.
+//  Локальные уведомления по выбранным районам: danger, attention и переход в allClear.
 //
 
 import Foundation
 import UserNotifications
 
-/// Запрашивает разрешение и шлёт локальные пуши без повторов по id сводки.
+/// Состояние системного разрешения на локальные уведомления.
+enum NotificationAccess: Equatable {
+    case notDetermined
+    case allowed
+    case provisional
+    case denied
+
+    var title: String {
+        switch self {
+        case .notDetermined:
+            "Разрешение не запрошено"
+        case .allowed:
+            "Уведомления разрешены"
+        case .provisional:
+            "Уведомления тихие"
+        case .denied:
+            "Уведомления выключены"
+        }
+    }
+}
+
+/// Запрашивает разрешение и шлёт локальные пуши без повторов по паре id и уровня.
 struct NotificationManager {
     static let shared = NotificationManager()
 
@@ -26,41 +47,59 @@ struct NotificationManager {
         self.defaults = defaults
     }
 
-    /// Спрашивает показ уведомлений и добавляет `.timeSensitive`, пока флаг есть в SDK.
+    /// Спрашивает показ уведомлений. Отказ пользователя возвращает `false`, не ошибку.
     @discardableResult
-    func requestAuthorization() async throws -> Bool {
-        var options: UNAuthorizationOptions = [.alert, .sound, .badge]
-        if #available(iOS 15.0, *) {
-            options.insert(.timeSensitive)
+    func requestAuthorization() async -> Bool {
+        do {
+            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
+        } catch {
+            return false
         }
-        return try await center.requestAuthorization(options: options)
     }
 
-    /// Отправляет пуш только для новых живых событий `danger` и `allClear` в подписанных районах.
+    /// Текущее разрешение без запроса диалога.
+    func authorizationState() async -> NotificationAccess {
+        let settings = await center.notificationSettings()
+        switch settings.authorizationStatus {
+        case .authorized, .ephemeral:
+            return .allowed
+        case .provisional:
+            return .provisional
+        case .denied:
+            return .denied
+        case .notDetermined:
+            return .notDetermined
+        @unknown default:
+            return .notDetermined
+        }
+    }
+
+    /// Пуш для новой сводки `danger` или `attention` и для перехода в `allClear`. Повтор той же пары id и уровня пропускается.
     func evaluateAndNotify(alerts: [RadarAlert], subscribedRegionIds: Set<String>) async {
         guard !subscribedRegionIds.isEmpty else { return }
 
         let settings = await center.notificationSettings()
         guard Self.isAuthorized(settings.authorizationStatus) else { return }
 
-        let alreadyProcessed = processedIDs()
+        let alreadyProcessed = processedFingerprints()
         let candidates = alerts.filter { alert in
             !alert.isExpired
                 && subscribedRegionIds.contains(alert.regionId)
                 && Self.isNotifiable(alert.level)
-                && !alreadyProcessed.contains(alert.id)
+                && !alreadyProcessed.contains(Self.fingerprint(for: alert))
         }
 
         var delivered: [String] = []
         for alert in candidates {
+            let fingerprint = Self.fingerprint(for: alert)
             let request = UNNotificationRequest(
-                identifier: alert.id,
+                identifier: fingerprint,
                 content: Self.content(for: alert),
                 trigger: nil
             )
             do {
                 try await center.add(request)
-                delivered.append(alert.id)
+                delivered.append(fingerprint)
             } catch {
                 continue
             }
@@ -82,8 +121,19 @@ struct NotificationManager {
         }
     }
 
+    /// Новая активная сводка или отбой. Спокойный статус `clear` сам по себе не пушится.
     private static func isNotifiable(_ level: ThreatLevel) -> Bool {
-        level == .danger || level == .allClear
+        switch level {
+        case .danger, .attention, .allClear:
+            true
+        case .clear:
+            false
+        }
+    }
+
+    /// Ключ дедупликации: то же событие с тем же уровнем не отправляется повторно, смена уровня — отправляется.
+    private static func fingerprint(for alert: RadarAlert) -> String {
+        "\(alert.id)|\(alert.level.rawValue)"
     }
 
     private static func content(for alert: RadarAlert) -> UNMutableNotificationContent {
@@ -104,7 +154,7 @@ struct NotificationManager {
         return content
     }
 
-    private func processedIDs() -> Set<String> {
+    private func processedFingerprints() -> Set<String> {
         Set(defaults.stringArray(forKey: Self.processedIDsKey) ?? [])
     }
 

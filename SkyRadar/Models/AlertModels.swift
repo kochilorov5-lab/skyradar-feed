@@ -157,121 +157,8 @@ nonisolated struct MonitoredRegion: Identifiable, Codable, Hashable, Sendable {
     let longitude: Double
     let radiusKm: Double
 
-    /// Готовые регионы и города России для первого запуска.
-    static let presets: [MonitoredRegion] = [
-        MonitoredRegion(
-            id: "moscow",
-            name: "Москва",
-            keywords: ["москва", "мск", "столица"],
-            latitude: 55.7558,
-            longitude: 37.6173,
-            radiusKm: 30
-        ),
-        MonitoredRegion(
-            id: "moscow-oblast",
-            name: "Московская область",
-            keywords: ["московская область", "подмосковье", "мособласть"],
-            latitude: 55.5830,
-            longitude: 37.6660,
-            radiusKm: 80
-        ),
-        MonitoredRegion(
-            id: "saint-petersburg",
-            name: "Санкт-Петербург",
-            keywords: ["санкт-петербург", "петербург", "спб", "питер"],
-            latitude: 59.9343,
-            longitude: 30.3351,
-            radiusKm: 28
-        ),
-        MonitoredRegion(
-            id: "leningrad-oblast",
-            name: "Ленинградская область",
-            keywords: ["ленинградская область", "ленобласть"],
-            latitude: 59.5764,
-            longitude: 30.1283,
-            radiusKm: 90
-        ),
-        MonitoredRegion(
-            id: "belgorod-oblast",
-            name: "Белгородская область",
-            keywords: ["белгород", "белгородская область"],
-            latitude: 50.5951,
-            longitude: 36.5873,
-            radiusKm: 70
-        ),
-        MonitoredRegion(
-            id: "kursk-oblast",
-            name: "Курская область",
-            keywords: ["курск", "курская область"],
-            latitude: 51.7373,
-            longitude: 36.1874,
-            radiusKm: 65
-        ),
-        MonitoredRegion(
-            id: "bryansk-oblast",
-            name: "Брянская область",
-            keywords: ["брянск", "брянская область"],
-            latitude: 53.2521,
-            longitude: 34.3717,
-            radiusKm: 65
-        ),
-        MonitoredRegion(
-            id: "voronezh-oblast",
-            name: "Воронежская область",
-            keywords: ["воронеж", "воронежская область"],
-            latitude: 51.6608,
-            longitude: 39.2003,
-            radiusKm: 75
-        ),
-        MonitoredRegion(
-            id: "rostov-oblast",
-            name: "Ростовская область",
-            keywords: ["ростов", "ростов-на-дону", "ростовская область"],
-            latitude: 47.2357,
-            longitude: 39.7015,
-            radiusKm: 85
-        ),
-        MonitoredRegion(
-            id: "krasnodar-krai",
-            name: "Краснодарский край",
-            keywords: ["краснодар", "краснодарский край", "кубань"],
-            latitude: 45.0355,
-            longitude: 38.9753,
-            radiusKm: 100
-        ),
-        MonitoredRegion(
-            id: "tatarstan",
-            name: "Республика Татарстан",
-            keywords: ["татарстан", "казань", "республика татарстан"],
-            latitude: 55.7961,
-            longitude: 49.1064,
-            radiusKm: 90
-        ),
-        MonitoredRegion(
-            id: "samara-oblast",
-            name: "Самарская область",
-            keywords: ["самара", "самарская область"],
-            latitude: 53.1959,
-            longitude: 50.1002,
-            radiusKm: 75
-        ),
-        MonitoredRegion(
-            id: "nizhny-novgorod-oblast",
-            name: "Нижегородская область",
-            keywords: ["нижний новгород", "нижегородская область", "нижний"],
-            latitude: 56.2965,
-            longitude: 43.9361,
-            radiusKm: 80
-        ),
-        MonitoredRegion(
-            id: "sverdlovsk-oblast",
-            name: "Свердловская область",
-            keywords: ["свердловская область", "екатеринбург"],
-            latitude: 56.8389,
-            longitude: 60.6057,
-            radiusKm: 100
-        )
-    ]
+    /// Все 89 субъектов РФ из справочника фида.
+    static var presets: [MonitoredRegion] { RussianRegion.presets }
 }
 
 /// Одна запись открытой сводки с сроком актуальности.
@@ -283,6 +170,7 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
     let summary: String
     let sourceName: String
     let sourceURL: String?
+    let locality: String?
     let timestamp: Date
     let expiresAt: Date
 
@@ -295,7 +183,8 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
         sourceName: String,
         sourceURL: String?,
         timestamp: Date,
-        expiresAt: Date
+        expiresAt: Date,
+        locality: String? = nil
     ) {
         self.id = id
         self.regionId = regionId
@@ -306,6 +195,7 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
         self.sourceURL = sourceURL
         self.timestamp = timestamp
         self.expiresAt = expiresAt
+        self.locality = locality
     }
 
     /// Срок сводки уже вышел.
@@ -346,6 +236,7 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
         case summary
         case sourceName
         case sourceURL
+        case locality
         case timestamp
         case expiresAt
     }
@@ -359,6 +250,7 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
         summary = try container.decode(String.self, forKey: .summary)
         sourceName = try container.decode(String.self, forKey: .sourceName)
         sourceURL = try container.decodeIfPresent(String.self, forKey: .sourceURL)
+        locality = try container.decodeIfPresent(String.self, forKey: .locality)
         timestamp = try RadarDateCodec.decode(from: container, forKey: .timestamp)
         expiresAt = try RadarDateCodec.decode(from: container, forKey: .expiresAt)
     }
@@ -372,6 +264,7 @@ nonisolated struct RadarAlert: Identifiable, Codable, Hashable, Sendable {
         try container.encode(summary, forKey: .summary)
         try container.encode(sourceName, forKey: .sourceName)
         try container.encodeIfPresent(sourceURL, forKey: .sourceURL)
+        try container.encodeIfPresent(locality, forKey: .locality)
         try container.encode(RadarDateCodec.string(from: timestamp), forKey: .timestamp)
         try container.encode(RadarDateCodec.string(from: expiresAt), forKey: .expiresAt)
     }

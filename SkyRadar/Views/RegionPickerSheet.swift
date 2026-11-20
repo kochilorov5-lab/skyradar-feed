@@ -24,12 +24,25 @@ struct RegionPickerSheet: View {
     @State private var locationMessage = ""
     @State private var locator = RegionLocator()
 
-    private var filteredRegions: [MonitoredRegion] {
+    /// Результат поиска: субъект и город, если запрос совпал с населённым пунктом.
+    private struct RegionHit: Identifiable {
+        var region: MonitoredRegion
+        var cityHint: String?
+        var id: String { region.id }
+    }
+
+    private var hits: [RegionHit] {
         let needle = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !needle.isEmpty else { return model.regions }
-        return model.regions.filter { region in
-            region.name.lowercased().contains(needle)
-                || region.keywords.contains { $0.lowercased().contains(needle) }
+        guard !needle.isEmpty else {
+            return model.regions.map { RegionHit(region: $0, cityHint: nil) }
+        }
+        return model.regions.compactMap { region in
+            let catalog = RussianRegion.catalog.first { $0.id == region.id }
+            let city = catalog?.matchedCity(for: needle)
+            let matchesName = region.name.lowercased().contains(needle)
+                || region.keywords.contains { $0.contains(needle) }
+            guard city != nil || matchesName else { return nil }
+            return RegionHit(region: region, cityHint: city)
         }
     }
 
@@ -84,7 +97,7 @@ struct RegionPickerSheet: View {
                 .foregroundStyle(Color.white.opacity(0.55))
                 .textCase(.uppercase)
 
-            if filteredRegions.isEmpty {
+            if hits.isEmpty {
                 Text("Ничего не найдено")
                     .font(.subheadline)
                     .foregroundStyle(Color.white.opacity(0.7))
@@ -92,14 +105,15 @@ struct RegionPickerSheet: View {
                     .padding(16)
                     .liquidGlass(tint: Color.white.opacity(0.3), cornerRadius: 20, material: .thinMaterial, glows: false)
             } else {
-                ForEach(filteredRegions) { region in
-                    regionRow(region)
+                ForEach(hits) { hit in
+                    regionRow(hit)
                 }
             }
         }
     }
 
-    private func regionRow(_ region: MonitoredRegion) -> some View {
+    private func regionRow(_ hit: RegionHit) -> some View {
+        let region = hit.region
         let selected = model.subscribedRegionIds.contains(region.id)
         return HStack(spacing: 12) {
             Button {
@@ -107,7 +121,15 @@ struct RegionPickerSheet: View {
                     model.toggleSubscription(region.id)
                 }
             } label: {
-                RegionChip(title: region.name, tint: ThreatLevel.clear.accent, isSelected: selected)
+                VStack(alignment: .leading, spacing: 4) {
+                    RegionChip(title: region.name, tint: ThreatLevel.clear.accent, isSelected: selected)
+                    if let cityHint = hit.cityHint {
+                        Text("город: \(cityHint)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(ThreatLevel.clear.accent)
+                            .padding(.leading, 8)
+                    }
+                }
             }
             .buttonStyle(.plain)
             Spacer(minLength: 0)

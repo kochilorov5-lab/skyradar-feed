@@ -20,6 +20,11 @@ struct AlertCardView: View {
                     Text(alert.regionName)
                         .font(.headline)
                         .foregroundStyle(.white)
+                    if let locality = alert.locality, !locality.isEmpty {
+                        Text(locality)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(alert.level.accent)
+                    }
                     Text(alert.timeAgoText)
                         .font(.caption)
                         .foregroundStyle(Color.white.opacity(0.62))

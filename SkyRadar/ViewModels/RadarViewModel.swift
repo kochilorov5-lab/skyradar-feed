@@ -99,6 +99,8 @@ final class RadarViewModel {
     var feedOrigin: FeedOrigin = .empty
     var loadError: String?
     var notice: String?
+    var notificationStatusTitle = NotificationAccess.notDetermined.title
+    var backgroundRefreshNote: String?
 
     private var demoAlert: RadarAlert?
     private let feed: FeedSyncService
@@ -183,19 +185,49 @@ final class RadarViewModel {
         return "\(names.prefix(3).joined(separator: " · ")) · ещё \(names.count - 3)"
     }
 
-    /// Пометка источника для карточки: мок, кэш или локальная демо-тревога.
+    /// Адрес фида: свой из UserDefaults или публичный JSON по умолчанию.
+    var feedURLString: String {
+        let stored = defaults.string(forKey: Self.feedURLKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if stored.isEmpty {
+            return FeedSyncService.defaultFeedURL.absoluteString
+        }
+        return stored
+    }
+
+    var isUsingDefaultFeedURL: Bool {
+        feedURLString == FeedSyncService.defaultFeedURL.absoluteString
+    }
+
+    /// Пометка источника на карточке: удалённый фид, кэш, демо или пустой ответ.
     func sourceMark(for alert: RadarAlert) -> String? {
-        if alert.id.hasPrefix("demo-") || isDemoAlarmOn && alert.sourceName == "Демо SkyRadar" {
-            return "Демо-данные"
+        if alert.sourceName == "Демо SkyRadar" {
+            return FeedOrigin.demo.title
         }
-        switch feedOrigin {
-        case .cache:
-            return "Кэш"
-        case .demo:
-            return "Демо-данные"
-        case .remote, .empty:
-            return nil
+        return feedOrigin.title
+    }
+
+    /// Сохраняет HTTPS-адрес или возвращает адрес по умолчанию, если поле пустое.
+    @discardableResult
+    func applyFeedURL(_ raw: String) -> Bool {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty || trimmed == FeedSyncService.defaultFeedURL.absoluteString {
+            defaults.removeObject(forKey: Self.feedURLKey)
+            return true
         }
+        guard let url = URL(string: trimmed),
+              url.scheme?.lowercased() == "https",
+              let host = url.host,
+              !host.isEmpty else {
+            return false
+        }
+        defaults.set(url.absoluteString, forKey: Self.feedURLKey)
+        return true
+    }
+
+    /// Сбрасывает подмену адреса на публичный фид.
+    func resetFeedURL() {
+        defaults.removeObject(forKey: Self.feedURLKey)
     }
 
     /// Поднимает кэш или демо-фид и запускает периодическое обновление.
@@ -203,9 +235,78 @@ final class RadarViewModel {
         guard !didStart else { return }
         didStart = true
         restore()
+        BackgroundRefreshManager.shared.attach(self)
         UNUserNotificationCenter.current().delegate = RadarNotificationDelegate.shared
+        await refreshNotificationStatus()
         await refresh(manual: false)
+        await scheduleBackgroundRefresh()
         monitor()
+    }
+
+    /// Обновляет фид в фоне, пишет кэш и шлёт пуши только по подписанным регионам.
+    func performBackgroundRefresh() async -> Bool {
+        if Task.isCancelled { return false }
+        do {
+            let synced = try await feed.sync(from: resolvedFeedURL())
+            if Task.isCancelled { return false }
+            if !isDemoAlarmOn {
+                payload = synced
+                feedOrigin = .remote
+                loadError = nil
+                now = Date()
+                lastUpdated = feed.lastSuccessfulUpdate ?? now
+            }
+            await notifications.evaluateAndNotify(alerts: synced.alerts, subscribedRegionIds: subscribedRegionIds)
+            publishWidgetSnapshot()
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// То же обновление, если экран ещё не создан: адрес и регионы читаются из UserDefaults.
+    static func syncFeedForBackground() async -> Bool {
+        let defaults = UserDefaults.standard
+        let ids = Set(defaults.stringArray(forKey: subscribedKey) ?? [])
+        guard !ids.isEmpty else { return true }
+        do {
+            let synced = try await FeedSyncService.shared.sync(from: feedURL(from: defaults))
+            await NotificationManager.shared.evaluateAndNotify(alerts: synced.alerts, subscribedRegionIds: ids)
+            FeedSyncService.shared.publishWidgetSnapshot(synced, subscribedRegionIds: ids)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// Планирует BGAppRefreshTask и запоминает текст, если система отказала.
+    func scheduleBackgroundRefresh() async {
+        BackgroundRefreshManager.shared.attach(self)
+        await BackgroundRefreshManager.shared.schedule()
+        backgroundRefreshNote = BackgroundRefreshManager.shared.statusNote
+    }
+
+    /// Читает разрешение, не показывая системный диалог.
+    func refreshNotificationStatus() async {
+        let access = await notifications.authorizationState()
+        notificationStatusTitle = access.title
+    }
+
+    /// Проверяет разрешение или запрашивает его. Отказ остаётся текстом статуса.
+    func reviewNotificationAccess() async {
+        let access = await notifications.authorizationState()
+        switch access {
+        case .notDetermined:
+            let allowed = await notifications.requestAuthorization()
+            notice = allowed
+                ? "Уведомления разрешены."
+                : "Разрешение на уведомления не выдано."
+        case .denied:
+            notice = "Уведомления выключены в настройках iOS."
+        case .allowed, .provisional:
+            notice = "Уведомления уже разрешены. Повтор по той же сводке не отправляется."
+        }
+        await refreshNotificationStatus()
     }
 
     /// Ручное или плановое обновление фида.
@@ -219,24 +320,23 @@ final class RadarViewModel {
             payload = feed.demoFeed(now: now)
             feedOrigin = .demo
             loadError = nil
-        } else if let url = storedFeedURL() {
-            do {
-                payload = try await feed.sync(from: url)
-                feedOrigin = .remote
-                loadError = nil
-            } catch {
-                loadError = error.localizedDescription
-                applyCachedOrEmpty(now: now)
-            }
-        } else if manual || payload == nil {
-            loadError = nil
-            applyCachedOrEmpty(now: now)
-        } else if let payload {
-            self.payload = feed.prepare(payload, now: now)
+            lastUpdated = now
+            publishWidgetSnapshot()
+            return
         }
 
-        lastUpdated = now
-        guard feedOrigin != .demo else { return }
+        do {
+            payload = try await feed.sync(from: resolvedFeedURL())
+            feedOrigin = .remote
+            loadError = nil
+            lastUpdated = feed.lastSuccessfulUpdate ?? now
+        } catch {
+            loadError = error.localizedDescription
+            applyCachedOrEmpty(now: now)
+        }
+
+        await scheduleBackgroundRefresh()
+        publishWidgetSnapshot()
         let alerts = payload?.alerts ?? []
         await notifications.evaluateAndNotify(alerts: alerts, subscribedRegionIds: subscribedRegionIds)
     }
@@ -257,25 +357,26 @@ final class RadarViewModel {
         }
 
         let region = subscribedRegions.first ?? MonitoredRegion.presets[0]
-        payload = feed.demoFeed(now: Date())
+        let stamp = Date()
+        payload = feed.demoFeed(now: stamp)
         feedOrigin = .demo
-        let alert = Self.makeDemoAlarm(for: region, now: Date())
+        lastUpdated = stamp
+        loadError = nil
+        let alert = Self.makeDemoAlarm(for: region, now: stamp)
         demoAlert = alert
 
-        do {
-            let allowed = try await notifications.requestAuthorization()
-            if allowed {
-                await notifications.evaluateAndNotify(
-                    alerts: [alert],
-                    subscribedRegionIds: subscribedRegionIds
-                )
-                notice = "Проверочное уведомление отправлено."
-            } else {
-                notice = "Уведомления выключены. Статус на экране уже обновлён."
-            }
-        } catch {
-            notice = "Не удалось запросить уведомления. Статус на экране уже обновлён."
+        let allowed = await notifications.requestAuthorization()
+        await refreshNotificationStatus()
+        if allowed {
+            await notifications.evaluateAndNotify(
+                alerts: [alert],
+                subscribedRegionIds: subscribedRegionIds
+            )
+            notice = "Проверочное уведомление отправлено."
+        } else {
+            notice = "Уведомления выключены. Статус на экране уже обновлён."
         }
+        publishWidgetSnapshot()
     }
 
     func toggleSubscription(_ regionID: String) {
@@ -363,6 +464,24 @@ final class RadarViewModel {
 
     private func persistSubscriptions() {
         defaults.set(Array(subscribedRegionIds), forKey: Self.subscribedKey)
+        publishWidgetSnapshot()
+        let alerts = payload?.alerts ?? []
+        let ids = subscribedRegionIds
+        Task {
+            await notifications.evaluateAndNotify(alerts: alerts, subscribedRegionIds: ids)
+        }
+    }
+
+    /// Пишет на экранный снимок в общий контейнер, включая локальную демо-тревогу.
+    private func publishWidgetSnapshot() {
+        var alerts = payload?.alerts ?? []
+        if let demoAlert, !alerts.contains(where: { $0.id == demoAlert.id }) {
+            alerts.insert(demoAlert, at: 0)
+        }
+        feed.publishWidgetSnapshot(
+            RadarFeedPayload(updatedAt: payload?.updatedAt ?? lastUpdated ?? Date(), alerts: alerts),
+            subscribedRegionIds: subscribedRegionIds
+        )
     }
 
     private func persistCustomRegions() {
@@ -370,22 +489,32 @@ final class RadarViewModel {
         defaults.set(data, forKey: Self.customRegionsKey)
     }
 
-    /// Кэш, если он есть. Иначе пустой фид без мок-тревог.
+    /// Кэш с диска, если он читается. Иначе пустой список без демо-сводок.
     private func applyCachedOrEmpty(now: Date) {
         if let cached = feed.cachedFeed(now: now) {
             payload = cached
             feedOrigin = .cache
+            lastUpdated = feed.lastSuccessfulUpdate ?? cached.updatedAt
         } else {
             payload = RadarFeedPayload(updatedAt: now, alerts: [])
             feedOrigin = .empty
+            lastUpdated = nil
         }
     }
 
-    private func storedFeedURL() -> URL? {
-        guard let raw = defaults.string(forKey: Self.feedURLKey),
+    /// Свой HTTPS-адрес из UserDefaults либо фид по умолчанию.
+    private func resolvedFeedURL() -> URL {
+        Self.feedURL(from: defaults)
+    }
+
+    private static func feedURL(from defaults: UserDefaults) -> URL {
+        guard let raw = defaults.string(forKey: feedURLKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines),
               let url = URL(string: raw),
-              url.scheme?.lowercased() == "https" else {
-            return nil
+              url.scheme?.lowercased() == "https",
+              let host = url.host,
+              !host.isEmpty else {
+            return FeedSyncService.defaultFeedURL
         }
         return url
     }

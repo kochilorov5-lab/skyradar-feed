@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct SkyRadarApp: App {
+    init() {
+        BackgroundRefreshManager.shared.register()
+    }
+
     var body: some Scene {
         WindowGroup {
             MainRadarView()
