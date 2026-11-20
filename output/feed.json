@@ -1,39 +1,39 @@
 {
-  "updatedAt": "2026-11-20T01:27:24Z",
+  "updatedAt": "2026-11-20T09:06:01Z",
   "alerts": [
     {
-      "id": "zaporizhzhia-oblast-danger-1795137424",
-      "regionId": "zaporizhzhia-oblast",
-      "regionName": "Запорожская область",
+      "id": "dnr-danger-1795165445",
+      "regionId": "dnr",
+      "regionName": "Донецкая Народная Республика",
       "level": "danger",
-      "summary": "Бердянск и близлежащие, тревога по БпЛА",
+      "summary": "Донецк и близлежащие Опасность по БПЛА Хорнет ДНР Особое внимание на дорогах!",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-20T01:17:04Z",
-      "expiresAt": "2026-11-20T02:07:04Z",
-      "locality": "Бердянск"
+      "timestamp": "2026-11-20T09:04:05Z",
+      "expiresAt": "2026-11-20T09:54:05Z",
+      "locality": "Донецк"
     },
     {
-      "id": "stavropol-krai-danger-1795136457",
-      "regionId": "stavropol-krai",
-      "regionName": "Ставропольский край",
+      "id": "astrakhan-oblast-danger-1795165131",
+      "regionId": "astrakhan-oblast",
+      "regionName": "Астраханская область",
       "level": "danger",
-      "summary": "Ставропольский край Опасность по БПЛА",
+      "summary": "Астраханская область Республика Калмыкия Опасность по БПЛА",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-20T01:00:57Z",
-      "expiresAt": "2026-11-20T01:50:57Z"
+      "timestamp": "2026-11-20T08:58:51Z",
+      "expiresAt": "2026-11-20T09:48:51Z"
     },
     {
-      "id": "crimea-danger-1795135149",
-      "regionId": "crimea",
-      "regionName": "Республика Крым",
+      "id": "kalmykia-danger-1795165131",
+      "regionId": "kalmykia",
+      "regionName": "Республика Калмыкия",
       "level": "danger",
-      "summary": "Островское Мельничное и близлежащие Опасность по БПЛА Республика Крым",
+      "summary": "Астраханская область Республика Калмыкия Опасность по БПЛА",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-20T00:39:09Z",
-      "expiresAt": "2026-11-20T01:29:09Z"
+      "timestamp": "2026-11-20T08:58:51Z",
+      "expiresAt": "2026-11-20T09:48:51Z"
     }
   ]
 }
