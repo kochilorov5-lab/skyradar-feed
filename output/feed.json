@@ -1,115 +1,94 @@
 {
-  "updatedAt": "2026-11-21T04:12:14Z",
+  "updatedAt": "2026-11-21T12:48:31Z",
   "alerts": [
     {
-      "id": "zaporizhzhia-oblast-danger-1795234068",
+      "id": "zaporizhzhia-oblast-danger-1795265025",
       "regionId": "zaporizhzhia-oblast",
       "regionName": "Запорожская область",
       "level": "danger",
-      "summary": "Трасса Приазовское - Инзовка- Приморск - Луначарское Опасность по БПЛА Запорожская область РФ",
+      "summary": "Харьковская область РФ ЛДНР Запорожская область РФ Авиационная ракетная бомбовая опасность повторно",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T04:07:48Z",
-      "expiresAt": "2026-11-21T08:07:48Z"
+      "timestamp": "2026-11-21T12:43:45Z",
+      "expiresAt": "2026-11-21T16:43:45Z"
     },
     {
-      "id": "leningrad-oblast-danger-1795233580",
-      "regionId": "leningrad-oblast",
-      "regionName": "Ленинградская область",
+      "id": "lnr-danger-1795264690",
+      "regionId": "lnr",
+      "regionName": "Луганская Народная Республика",
       "level": "danger",
-      "summary": "Усть-Луга и близлежащие, Ленинградская область - опасность по БПЛА сохраняется. 📡",
+      "summary": "Попасная, Лисичанск ЛНР ракетная опасность",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T03:59:40Z",
-      "expiresAt": "2026-11-21T07:59:40Z"
+      "timestamp": "2026-11-21T12:38:10Z",
+      "expiresAt": "2026-11-21T16:38:10Z"
     },
     {
-      "id": "bryansk-oblast-danger-1795231996",
+      "id": "kursk-oblast-danger-1795264623",
+      "regionId": "kursk-oblast",
+      "regionName": "Курская область",
+      "level": "danger",
+      "summary": "Курская область и близлежащие авиационная ракетная бомбовая опасность",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-21T12:37:03Z",
+      "expiresAt": "2026-11-21T16:37:03Z"
+    },
+    {
+      "id": "belgorod-oblast-danger-1795264006",
+      "regionId": "belgorod-oblast",
+      "regionName": "Белгородская область",
+      "level": "danger",
+      "summary": "Валуйский округ Белгородская область опасность по БПЛА",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-21T12:26:46Z",
+      "expiresAt": "2026-11-21T16:26:46Z"
+    },
+    {
+      "id": "bryansk-oblast-danger-1795260946",
       "regionId": "bryansk-oblast",
       "regionName": "Брянская область",
       "level": "danger",
-      "summary": "Брянская опасность по БПЛА",
+      "summary": "Брянская область - опасность по БПЛА. 📡",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T03:33:16Z",
-      "expiresAt": "2026-11-21T07:33:16Z"
+      "timestamp": "2026-11-21T11:35:46Z",
+      "expiresAt": "2026-11-21T15:35:46Z"
     },
     {
-      "id": "voronezh-oblast-danger-1795229039",
-      "regionId": "voronezh-oblast",
-      "regionName": "Воронежская область",
+      "id": "crimea-danger-1795253940",
+      "regionId": "crimea",
+      "regionName": "Республика Крым",
       "level": "danger",
-      "summary": "Отмена непосредственной опасности атаки БПЛА во всех муниципалитетах Воронежской области! Режим опасности атаки БПЛА сохраняется на всей территории региона!",
-      "sourceName": "Александр Гусев",
-      "sourceURL": "https://t.me/gusev_36/7950",
-      "timestamp": "2026-11-21T02:43:59Z",
-      "expiresAt": "2026-11-21T06:43:59Z"
+      "summary": "Армянск и близлежащие Опасность по БПЛА Республика Крым",
+      "sourceName": "radar-map.ru",
+      "sourceURL": "https://radar-map.ru/",
+      "timestamp": "2026-11-21T09:39:00Z",
+      "expiresAt": "2026-11-21T13:39:00Z",
+      "locality": "Армянск"
     },
     {
-      "id": "kherson-oblast-danger-1795221957",
+      "id": "kherson-oblast-danger-1795252541",
       "regionId": "kherson-oblast",
       "regionName": "Херсонская область",
       "level": "danger",
-      "summary": "От Новотроицкое в направлении Кирилловки, тревога по БПЛА Херсонская область РФ",
+      "summary": "Чаплынка и близлежащие Опасность по БПЛА Хорнет Херсонская область РФ",
       "sourceName": "radar-map.ru",
       "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T00:45:57Z",
-      "expiresAt": "2026-11-21T04:45:57Z"
+      "timestamp": "2026-11-21T09:15:41Z",
+      "expiresAt": "2026-11-21T13:15:41Z"
     },
     {
-      "id": "lnr-attention-1795233823",
-      "regionId": "lnr",
-      "regionName": "Луганская Народная Республика",
-      "level": "attention",
-      "summary": "От Старобельска ЛНР в направлении Беловодск, Чертково Ростовской области и близлежащие , восточное направление Фиксации БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T04:03:43Z",
-      "expiresAt": "2026-11-21T08:03:43Z"
-    },
-    {
-      "id": "novgorod-oblast-attention-1795231689",
-      "regionId": "novgorod-oblast",
-      "regionName": "Новгородская область",
-      "level": "attention",
-      "summary": "Солецкий район Новгородская область Фиксация группы БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T03:28:09Z",
-      "expiresAt": "2026-11-21T07:28:09Z"
-    },
-    {
-      "id": "tver-oblast-attention-1795231635",
-      "regionId": "tver-oblast",
-      "regionName": "Тверская область",
-      "level": "attention",
-      "summary": "Бельский район Тверская область Фиксация БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T03:27:15Z",
-      "expiresAt": "2026-11-21T07:27:15Z"
-    },
-    {
-      "id": "pskov-oblast-attention-1795231571",
-      "regionId": "pskov-oblast",
-      "regionName": "Псковская область",
-      "level": "attention",
-      "summary": "Новосокольнический район Псковская область Фиксация БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T03:26:11Z",
-      "expiresAt": "2026-11-21T07:26:11Z"
-    },
-    {
-      "id": "smolensk-oblast-attention-1795223807",
-      "regionId": "smolensk-oblast",
-      "regionName": "Смоленская область",
-      "level": "attention",
-      "summary": "Духовщинский район Смоленская область Фиксация БПЛА",
-      "sourceName": "radar-map.ru",
-      "sourceURL": "https://radar-map.ru/",
-      "timestamp": "2026-11-21T01:16:47Z",
-      "expiresAt": "2026-11-21T05:16:47Z"
+      "id": "sevastopol-danger-1795251609",
+      "regionId": "sevastopol",
+      "regionName": "Севастополь",
+      "level": "danger",
+      "summary": "Наши военные, ПВО и мобильные группы отразили атаку ВСУ на Севастополь. Нейтрализован 1 БПЛА над морем в районе Северной стороны. Повреждений инфраструктуры не зафиксировано. ❗️ Напоминаю: при обнаружении любых опасных предметов или обломков ни в коем случае не подходите к ним! Сразу сообщайте об этом по номеру 112. ⚡️ ⚡️ ⚡️ ⚡️ Доверяйте только официальной и",
+      "sourceName": "Михаил Развожаев",
+      "sourceURL": "https://t.me/razvozhaev/25283",
+      "timestamp": "2026-11-21T09:00:09Z",
+      "expiresAt": "2026-11-21T13:00:09Z"
     }
   ]
 }
